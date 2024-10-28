@@ -1,19 +1,25 @@
 import { Link, Tabs } from 'expo-router';
+import cl from '../../../AdventuresApp/src/theme/Colours'
 
-import { HeaderButton } from '../../components/HeaderButton';
-import { TabBarIcon } from '../../components/TabBarIcon';
+import { HeaderButton } from '../../../AdventuresApp/src/components/HeaderButton';
+import { TabBarIcon } from '../../../AdventuresApp/src/components/TabBarIcon';
+import { TabBarIcons } from '../../../AdventuresApp/src/theme/Icons';
 
 export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: 'black',
+        headerShown: false,
+        tabBarActiveTintColor: cl.maroon.dark_95,
+        tabBarInactiveTintColor:cl.maroon.standard_seventy,
+        tabBarShowLabel:false,
+        
       }}>
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Tab One',
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+          title: 'Home',
+          tabBarIcon: ({ color }) => <TabBarIcons icon={'home'} fill={color} />,
           headerRight: () => (
             <Link href="/modal" asChild>
               <HeaderButton />
@@ -22,10 +28,31 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="two"
+        name="chats"
         options={{
-          title: 'Tab Two',
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+          title: 'Chats',
+          tabBarIcon: ({ color }) => <TabBarIcons icon={'chats'} fill={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="profile"
+        options={{
+          title: 'Profile',
+          tabBarIcon: ({ color }) => <TabBarIcons icon={'profile'} fill={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="events"
+        options={{
+          title: 'Events',
+          tabBarIcon: ({ color }) => <TabBarIcons icon={'events'} fill={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="settings"
+        options={{
+          title: 'Settings',
+          tabBarIcon: ({ color }) => <TabBarIcons icon={'settings'} fill={color} />,
         }}
       />
     </Tabs>

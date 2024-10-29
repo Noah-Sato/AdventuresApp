@@ -1,4 +1,4 @@
-import { Link, Tabs } from 'expo-router';
+import { Link, Redirect, Tabs } from 'expo-router';
 import cl from '../../../AdventuresApp/src/theme/Colours'
 
 import { HeaderButton } from '../../../AdventuresApp/src/components/HeaderButton';
@@ -6,7 +6,9 @@ import { TabBarIcon } from '../../../AdventuresApp/src/components/TabBarIcon';
 import { TabBarIcons } from '../../../AdventuresApp/src/theme/Icons';
 
 export default function TabLayout() {
-  return (
+
+  return <Redirect href='/(auth)/login'/>
+  /*return (
     <Tabs
       screenOptions={{
         headerShown: false,
@@ -56,5 +58,5 @@ export default function TabLayout() {
         }}
       />
     </Tabs>
-  );
+  );*/
 }

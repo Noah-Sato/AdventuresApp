@@ -32,7 +32,7 @@ function SquareButton( props ) {
     let outlineColor = {}
     
     if ( fullsize == true ) {
-        alignment = { alignSelf: 'auto'}
+        alignment = { alignSelf:'stretch'}
       } else {
         alignment = { alignSelf: 'flex-start'}
       };
@@ -40,24 +40,24 @@ function SquareButton( props ) {
     switch(size) {
         case 'small':
             
-            paddingHorizontal = l.spacing.s
-            paddingVertical = l.spacing.xs
+            paddingHorizontal = l.buttonSpacing.medium
+            paddingVertical = l.buttonSpacing.small
             textStyle = bS.BTN_label_s
             iconSize = 12
             textPadding = l.sizeFromHeight(1)
         break;
         case 'medium':
             
-            paddingHorizontal = l.spacing.m
-            paddingVertical = l.spacing.xs
+            paddingHorizontal = l.buttonSpacing.large
+            paddingVertical = l.buttonSpacing.medium
             textStyle = bS.BTN_label_m
             iconSize = 14
             textPadding = l.sizeFromHeight(2)
         break;
         case 'large':
             
-            paddingHorizontal = l.spacing.l
-            paddingVertical = l.spacing.s
+            paddingHorizontal = l.buttonSpacing.xlarge
+            paddingVertical = l.buttonSpacing.large
             textStyle = bS.BTN_label_l
             iconSize = 16
             textPadding = l.sizeFromHeight(3)
@@ -73,7 +73,7 @@ function SquareButton( props ) {
       };
 
     return(
-        <TouchableOpacity onPress={onPressHandler}>
+        <TouchableOpacity onPress={onPressHandler} >
             <View style={[alignment,{
                 paddingHorizontal,
                 paddingVertical,
@@ -88,6 +88,7 @@ function SquareButton( props ) {
                 
                 
                 
+                
                 }]}>
                 
                     <Text style={[textStyle,{color:cl.basic.white, paddingTop: textPadding}]}>{label}</Text>
@@ -99,4 +100,6 @@ function SquareButton( props ) {
 }
 
 
-export { SquareButton }
+
+
+export { SquareButton,  }

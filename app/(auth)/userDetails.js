@@ -59,7 +59,7 @@ export default function Auth({ navigation }) {
             }}>
 
             
-            <PageHeader back={true} onBackPress={()=>router.navigate('../')} label={Dictionary.userAccount.Login}/>
+            <PageHeader back={true} onBackPress={()=>router.navigate('../')} label={Dictionary.userAccount.Details}/>
 
 
 
@@ -94,7 +94,7 @@ export default function Auth({ navigation }) {
             </View>
 
             <View style={{gap:l.spacing.xs}}>
-                <Text style={[bS.body4,{color:cl.basic.white}]}>{'Please enter your email'} </Text>
+                <Text style={[bS.body4,{color:cl.basic.white}]}>{'Please enter your password'} </Text>
                     <View style={{
                         borderWidth:l.spacing.xs3,
                         paddingHorizontal:l.spacing.s,
@@ -108,25 +108,25 @@ export default function Auth({ navigation }) {
 
                     }}>
                         <TextInput
-                        style={{color:cl.basic.white}}
-                        label="Email"
-                        placeholderTextColor={cl.grey.sixty}
-                        cursorColor={cl.basic.white}
-                        numberOfLines={1}
-                        keyboardType='email-address'
-                        keyboardAppearance='light'
-                        ellipsizeMode='tail'
-                        onChangeText={(text) => setEmail(text)}
-                        value={email}
-                        placeholder="Please enter your email address"
-                        autoCapitalize={'none'}
+                          style={{color:cl.basic.white}}
+                          label="Password"
+                          placeholderTextColor={cl.grey.sixty}
+                          cursorColor={cl.basic.white}
+                          numberOfLines={1}
+                          keyboardAppearance='light'
+                          ellipsizeMode='tail'
+                          onChangeText={(text) => setPassword(text)}
+                          value={password}
+                          secureTextEntry={true}
+                          placeholder="Password"
+                          autoCapitalize={'none'}
                         />
                     </View>
     
                 </View>
             
             </View>
-
+            <SquareButton onPress={() => signUpWithEmail()} size={'large'} fill={true} label ={Dictionary.userAccount.Up}/>
         </View>
 
 

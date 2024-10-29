@@ -4,6 +4,7 @@ export const Dictionary = {
         "Login":"Login",
         "In":"Sign In",
         "Up":"Sign Up",
+        "Details":"User Details"
 
     }
 }

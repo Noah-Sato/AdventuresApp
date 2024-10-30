@@ -76,7 +76,7 @@ function UserIcon( props ) {
         borderColor = cl.maroon.standard_seventy
         return(
             <View style={[{
-                alignSelf:'flex-start',
+                alignSelf:'center',
                 backgroundColor:cl.basic.white,
                 borderRadius:l.roundness.max,
                 borderWidth:l.spacing.xs3,

@@ -21,7 +21,7 @@ const AppColors = {
         sixty:'#DD4325',
         standard_fifty:'#F06449',
         fourty:'#F88771',
-        light_thrity:'#FCB3A5'
+        light_thirty:'#FCB3A5'
     },
     green: {
         dark_ninty:'#254228',

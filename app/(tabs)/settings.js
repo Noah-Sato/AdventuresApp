@@ -1,19 +1,23 @@
-
-import { supabase } from '~/utils/supabase'
 import { SafeAreaView, ScrollView, StyleSheet, View } from 'react-native';
-import { Text } from '@src/components/Text';
+
+import { bS } from '@theme/Styles'
+import cl from '@theme/Colours'
 import l from '@theme/Layout'
 
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { SafeAreaInsetsContext, useSafeAreaInsets } from "react-native-safe-area-context";
 import { mainStyles } from '@src/theme/Styles';
-import { useEffect, useState } from 'react';
+
+import { Text } from '@src/components/Text';
 import { SquareButton }from '@components/Buttons';
 
+import { useEffect, useState } from 'react';
+import { supabase } from '~/utils/supabase'
+import { useAuth } from '~/contexts/AuthProvider';
 
 
-export default function Page() {
+
+export default function App() {
     const insets = useSafeAreaInsets()
-
 
     return( 
         <ScrollView style={[mainStyles.page,{paddingTop:insets.top,}]}>

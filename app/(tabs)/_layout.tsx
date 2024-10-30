@@ -1,22 +1,25 @@
 import { Link, Redirect, Tabs } from 'expo-router';
 import cl from '../../../AdventuresApp/src/theme/Colours'
+import { supabase } from '~/utils/supabase'
 
 import { HeaderButton } from '../../../AdventuresApp/src/components/HeaderButton';
 import { TabBarIcon } from '../../../AdventuresApp/src/components/TabBarIcon';
 import { TabBarIcons } from '../../../AdventuresApp/src/theme/Icons';
 import { useAuth } from '~/contexts/AuthProvider';
 
+
 export default function TabLayout() {
 
 
-  const  { isAuthenticated } = useAuth();
-  
+  const  { isAuthenticated  } = useAuth();
 
   if ( !isAuthenticated ){
 
   return <Redirect href='/(auth)/login'/>
 
   } 
+
+  
     return (
       <Tabs
         screenOptions={{

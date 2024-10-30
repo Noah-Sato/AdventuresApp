@@ -28,6 +28,8 @@ export default function Auth({ navigation }) {
     const [password, setPassword] = useState('')
     const [loading, setLoading] = useState(false)
     const [username, setUserName] = useState('')
+    const [firstName, setFirstName] = useState('')
+    const [surName, setSurName] = useState('')
 
 
 
@@ -39,6 +41,7 @@ export default function Auth({ navigation }) {
         } = await supabase.auth.signUp({
           email: email,
           password: password,
+
         })
     
         if (error) Alert.alert(error.message)
@@ -126,7 +129,10 @@ export default function Auth({ navigation }) {
                 </View>
             
             </View>
-            <SquareButton onPress={() => signUpWithEmail()} size={'large'} fill={true} label ={Dictionary.userAccount.Up}/>
+            <View style={{alignItems:'center'}}>
+              <SquareButton onPress={() => {signUpWithEmail()}} 
+                size={'large'} fill={true} iconR={true} label ={Dictionary.userAccount.Next}/>
+            </View>
         </View>
 
 

@@ -1,4 +1,4 @@
-import { Stack } from 'expo-router';
+import { Redirect, Stack } from 'expo-router';
 import { SafeAreaView, StyleSheet, View } from 'react-native';
 import { Text } from '@src/components/Text';
 import l from '@theme/Layout'
@@ -8,16 +8,17 @@ import { mainStyles } from '@src/theme/Styles';
 import { useEffect, useState } from 'react';
 import { SquareButton }from '@components/Buttons';
 import { UserIcon } from '@components/userIcons';
+import { useAuth } from '~/contexts/AuthProvider';
 
 export default function Page() {
     const insets = useSafeAreaInsets()
     const [isLogged, setIsLogged ] = useState()
 
     
+  
 
-    /*useEffect({
-         
-    },[])*/
+  
+
     
     return( 
         <View style={[mainStyles.page,{paddingTop:insets.top,}]}>

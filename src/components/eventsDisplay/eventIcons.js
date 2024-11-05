@@ -129,7 +129,7 @@ function EventsIcon( props ) {
                                 borderRadius:l.roundness.max,
                                    
                             }]}
-                            source={userImage}
+                            source={{uri:userImage}}
                             contentFit="cover"
                             transition={1000}
                         />
@@ -177,7 +177,7 @@ function EventsIcon( props ) {
 
                         <Image 
                             style={[pictureStyles, {borderRadius:l.roundness.max,}]}
-                            source={eventImage}
+                            source={{uri: eventImage}}
                             contentFit="cover"
                             transition={1000}
                         />

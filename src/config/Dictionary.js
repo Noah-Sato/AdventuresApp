@@ -11,6 +11,10 @@ export const Dictionary = {
     },
 
     "tabs":{
-        "Profile":"Profile"
+        "Profile":"Profile",
+        "Events":{
+            "Title":"Your Events"
+        }
+
     }
 }

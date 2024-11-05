@@ -2,15 +2,16 @@ import { bS } from '@theme/Styles'
 import cl from '@theme/Colours'
 import l from '@theme/Layout'
 import { Text } from '@components/Text'
-import { View, TouchableOpacity,StyleSheet, FlatList  } from 'react-native';
+import {  View, TouchableOpacity,StyleSheet, FlatList  } from 'react-native';
 
 
 import { UserIcon } from '@components/userIcons';
 import { EventsIcon } from '@components/eventsDisplay/eventIcons';
 
 import { format, isSameDay, isTomorrow, parse, parseISO,  } from 'date-fns'
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import RightArrowButton from '@assets/ButtonIcons/chevron_right_24px_outlined.svg'
+import { supabase } from '~/utils/supabase'
 
 //Api call take users name/Id and request all/spesific info based on the 
 
@@ -30,31 +31,63 @@ const dummyGuestList = [
 
 
 function EventsDisplay(props) {
+
+    const [attendees, setAttendees ] = useState([])
+    const [userImage, setUserImage ] = useState(undefined)
+
+
+
+
     
-    let size
-    let eventImage
-    let userImage
-    let Title
-    let startDate
-    let endDate
-    let location
-    let Guests
+    
+    
 
 
-    if (!props.eventData){
+    
 
-    size = props.size ? props.size : 'large'
-    eventImage = props.eventImage ? props.eventImage : undefined
-    userImage = props.userImage ? props.userImgae : undefined //may have an API call in here for user data this is a placeholder peice of code 
-    Title = props.eventTitle ? props.eventTitle : 'Title Placeholder'
-    startDate = props.startDate ? props.startDate : "2025-01-01T12:09:00"
-    location = props.location ? props.location : 'Location Placeholder'
-    endDate = props.endDate ? props.endDate : "2025-01-01T15:12:00"
-    Guests = props.guestList ? props.guestList: dummyGuestList
+    const size = props.size ? props.size : 'large'
+    const eventImage = props.eventImage ? props.eventImage : undefined
+    const userID = props.userID ? props.userID : undefined //may have an API call in here for user data this is a placeholder peice of code 
+    const Title = props.eventTitle ? props.eventTitle : 'Title Placeholder'
+    const startDate = props.startDate ? props.startDate : "2025-01-01T12:09:00"
+    const location = props.location ? props.location : 'Location Placeholder'
+    const  endDate = props.endDate ? props.endDate : "2025-01-01T15:12:00"
+    const Guests = props.guestList ? props.guestList: dummyGuestList
+    const eventID = props.id ? props.id: undefined
 
+
+    useEffect(() => {
+        fetchUserImage({userID:userID})
+        fetchAttendees()
+    },[])
+
+    
+
+    const fetchAttendees = async () => {
+        const {data, error } = await supabase.from('attendance').select('*, profiles(*)').eq('event_id', eventID);
+        
+        
+        const useAttendees = data.map((x) => {
+            return {
+               id: x.profiles.id,
+               image: x.profiles.avatar_url
+
+            }
+        })
+        
+        setAttendees(useAttendees)
+        
+    }
+
+    const fetchUserImage = async ({userID}) => {
+        const {data: data, error}= await supabase.from('profiles').select('avatar_url').eq('id',userID).single()
+        if (data !== null){
+            setUserImage(data.avatar_url)
+        }
     }
 
     
+
 
     let displayStartDate = ''
     let dateTextColor
@@ -103,17 +136,17 @@ function EventsDisplay(props) {
             break;
         }
         const length = guestList.length
-        console.log(length,'guestList')
+        
 
         const DisplayedGuests = guestList.slice(0,maxShown)
-        console.log(DisplayedGuests)
+        
         
         
         return (
             <View style={{flexDirection:'row',gap:l.spacing.xs2, alignItems:'center' }}>
-                {DisplayedGuests.map((item) => {
-                    console.log('make APi call her to access user images')
-                    return<UserIcon/>
+                {DisplayedGuests.map((item, index) => {
+                    
+                    return <UserIcon userImage={item.image} key={index}/>
                 })}
 
                 {(length > maxShown) && <Text style={[bS.body3, {color:cl.basic.white}]}>{`+${length-maxShown}`}</Text>}
@@ -132,31 +165,34 @@ function EventsDisplay(props) {
                 flexDirection:'row',
                 justifyContent:'space-between',
                 alignItems:'center',
-                borderColor:cl.basic.white
+                borderColor:cl.basic.white,
+                width:l.screen.width
 
             }}>
-                <View>
-                    <EventsIcon size={'large'}eventImage={eventImage} userImage={userImage}/>
-                </View>
-
-                <View style={{
-                    paddingVertical:l.buttonSpacing.large,
-                    paddingHorizontal:l.spacing.xs,
-                    borderRadius:l.spacing.xs,
-                    borderWidth:l.spacing.xs3,
-                    borderColor:cl.basic.white,
-                    alignSelf:'center'
-
-                }}>
-                    <View style={{paddingBottom:l.spacing.xs}}>
-                        <Text style={[bS.body3,{color:cl.basic.white}]}>{Title}</Text>
-                        <Text style={[bS.body3,{color:dateTextColor}]}>{`${displayStartDate}`}</Text>
-                        <Text style={[bS.body3,{color:dateTextColor}]}>{location}</Text>
-                    
-                    
+                <View style={{gap:l.spacing.xs, flexDirection:'row'}}>
+                    <View>
+                        <EventsIcon size={'large'} eventImage={eventImage} userImage={userImage}/>
                     </View>
-                    <GuestIconsDisplay size={size} guestList={Guests}/>
-                    
+
+                    <View style={{
+                        paddingVertical:l.buttonSpacing.large,
+                        paddingHorizontal:l.spacing.xs,
+                        borderRadius:l.spacing.xs,
+                        //borderWidth:l.spacing.xs3,
+                        borderColor:cl.basic.white,
+                        alignSelf:'center'
+
+                    }}>
+                        <View style={{paddingBottom:l.spacing.xs, width:(l.screen.width / 2.5)}}>
+                            <Text style={[bS.body3 , {color:cl.basic.white, numberOfLines:1, ellipsizeMode:'tail' }]}>{Title}</Text>
+                            <Text style={[bS.body3,{color:dateTextColor}]}>{`${displayStartDate}`}</Text>
+                            <Text style={[bS.body3,{color:dateTextColor, numberOfLines:1, ellipsizeMode:'tail'}]}>{location}</Text>
+                        
+                        
+                        </View>
+                        <GuestIconsDisplay size={size} guestList={attendees}/>
+                        
+                    </View>
                 </View>
 
                 <RightArrowButton width={24} height={24} fill={cl.basic.white}/>
@@ -202,7 +238,7 @@ function EventsDisplay(props) {
                         
                         
                         </View>
-                        <GuestIconsDisplay size={size} guestList={Guests}/>
+                        <GuestIconsDisplay size={size} guestList={attendees}/>
                     </View>
                 </View>
 

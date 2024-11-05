@@ -16,8 +16,11 @@ import { useAuth } from '~/contexts/AuthProvider';
 
 
 
+
+
 export default function App() {
     const insets = useSafeAreaInsets()
+    const [avatarUrl, setAvatarUrl] = useState(null)
 
     return( 
         <ScrollView style={[mainStyles.page,{paddingTop:insets.top,}]}>
@@ -26,7 +29,8 @@ export default function App() {
         
         <View >
         
-            <SquareButton label={'sign out'} onPress={() => supabase.auth.signOut()}/>
+        
+            
             
             
         </View>

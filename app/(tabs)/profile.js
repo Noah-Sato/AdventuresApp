@@ -108,11 +108,13 @@ export default function Page() {
                 }}>
                 
                 <PageHeader label={Dictionary.tabs.Profile}/>
-                <UserIcon size={'profile'}/>
+                <UserIcon userImage={avatarUrl} size={'profile'}/>
                 
         
         
             <SquareButton size={'large'} label={'Edit Profile'}  fill={true} onPress={()=>{router.navigate('/editUserModal')}}/>
+
+            <SquareButton label={'sign out'} onPress={() => supabase.auth.signOut()}/>
         </View>
     </View>
         

@@ -17,7 +17,7 @@ function UserIcon( props ) {
         small: {
             padding:l.spacing.xs,
             iconSize:l.spacing.m - l.spacing.xs2,
-            size:l.spacing.l + (l.spacing.xs * 2)
+            size:l.spacing.m - l.spacing.xs2 + (l.spacing.xs * 2)
         },
 
         medium: {
@@ -28,12 +28,12 @@ function UserIcon( props ) {
         large:{
             padding:l.spacing.xs + l.spacing.s,
             iconSize:l.spacing.l * 3,
-            size:(l.spacing.l * 4)+ (l.spacing.xs * 2)
+            size:(l.spacing.l * 3)+ (l.spacing.xs * 2)
         },
         profile:{
             padding:l.spacing.xs + l.spacing.l,
             iconSize:l.spacing.l * 4,
-            size:(l.spacing.l * 6)+ (l.spacing.xs * 2)
+            size:(l.spacing.l * 6)+ (l.spacing.xs + l.spacing.s * 2)
         },
     }
     let iconSize 
@@ -91,7 +91,7 @@ function UserIcon( props ) {
         borderColor = cl.basic.white
         return(
             <View style={{
-                alignSelf:'flex-start',
+                alignSelf:'center',
                 backgroundColor:cl.basic.white,
                             borderRadius:l.roundness.max,
                             borderWidth:l.spacing.xs3,
@@ -100,7 +100,7 @@ function UserIcon( props ) {
 
                     <Image 
                         style={[pictureStyles, {borderRadius:l.roundness.max,}]}
-                        source={useImage}
+                        source={{uri:useImage}}
                         contentFit="cover"
                         transition={1000}
                     />

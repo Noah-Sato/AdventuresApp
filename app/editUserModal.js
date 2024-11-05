@@ -117,7 +117,8 @@ export default function Page() {
                     
                     
                     <View>
-                        <UserIcon size={'profile'}/>
+                      <UserIcon userImage={avatarUrl} size={'profile'}/>
+                      
 
                         <Pressable onPress={()=>{console.log('profile to edit')}}style={{
                             position:'absolute',

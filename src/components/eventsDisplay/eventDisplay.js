@@ -2,7 +2,7 @@ import { bS } from '@theme/Styles'
 import cl from '@theme/Colours'
 import l from '@theme/Layout'
 import { Text } from '@components/Text'
-import {  View, TouchableOpacity,StyleSheet, FlatList  } from 'react-native';
+import {  View, TouchableOpacity,StyleSheet, FlatList, Pressable  } from 'react-native';
 
 
 import { UserIcon } from '@components/userIcons';
@@ -12,6 +12,7 @@ import { format, isSameDay, isTomorrow, parse, parseISO,  } from 'date-fns'
 import { useEffect, useState } from 'react';
 import RightArrowButton from '@assets/ButtonIcons/chevron_right_24px_outlined.svg'
 import { supabase } from '~/utils/supabase'
+import { Link } from 'expo-router';
 
 //Api call take users name/Id and request all/spesific info based on the 
 
@@ -66,15 +67,16 @@ function EventsDisplay(props) {
     const fetchAttendees = async () => {
         const {data, error } = await supabase.from('attendance').select('*, profiles(*)').eq('event_id', eventID);
         
-        
-        const useAttendees = data.map((x) => {
-            return {
-               id: x.profiles.id,
-               image: x.profiles.avatar_url
+        let useAttendees
+        if (data !== null ) {
+            useAttendees = data.map((x) => {
+                return {
+                id: x.profiles.id,
+                image: x.profiles.avatar_url
 
-            }
-        })
-        
+                }
+            })
+        }
         setAttendees(useAttendees)
         
     }
@@ -93,32 +95,32 @@ function EventsDisplay(props) {
     let dateTextColor
 
 
-    if (endDate !== undefined){
+    
         if (isTomorrow(startDate)){
 
             if (isSameDay(startDate,endDate)) {
-                displayStartDate = 'Tomorrow ' + format(startDate,'p - ' )
-                displayEndDate = format(endDate,'p')            
+                displayStartDate = 'Tomorrow ' + format(startDate,'p ' )
+                         
             } else {
-                displayStartDate = 'Tomorrow ' + format(startDate,'p - ' )
-                displayEndDate = format(endDate,'do MMM, p') 
+                displayStartDate = 'Tomorrow ' + format(startDate,'p ' )
+                 
             }
 
             
-            dateTextColor = cl.maroon.light_fourty
+            dateTextColor = cl.red.light_thirty
         } else {
             
             dateTextColor = cl.basic.white
 
             if (isSameDay(startDate,endDate)) {
                 displayStartDate =format(startDate,'do MMM, p' )
-                displayEndDate = format(endDate,'p')            
+                           
             } else {
                 displayStartDate = format(startDate,'do MMM, p' )
-                displayEndDate = format(endDate,'do MMM, p') 
+                
             }
         }
-    }
+    
 
     const GuestIconsDisplay = ({guestList,size}) => {
         let maxShown
@@ -135,6 +137,9 @@ function EventsDisplay(props) {
                 maxShown = 0
             break;
         }
+
+
+        
         const length = guestList.length
         
 
@@ -157,47 +162,52 @@ function EventsDisplay(props) {
 
     if (size == 'large') {
         return(
-            <View style={{
-                paddingHorizontal:l.spacing.xs,
-                paddingVertical:l.spacing.s,
-                borderBottomWidth:l.spacing.xs3,
-                borderTopWidth:l.spacing.xs3,
-                flexDirection:'row',
-                justifyContent:'space-between',
-                alignItems:'center',
-                borderColor:cl.basic.white,
-                width:l.screen.width
-
-            }}>
-                <View style={{gap:l.spacing.xs, flexDirection:'row'}}>
-                    <View>
-                        <EventsIcon size={'large'} eventImage={eventImage} userImage={userImage}/>
-                    </View>
-
+            <Link href={`/event/${eventID}`} asChild>
+                <Pressable>
                     <View style={{
-                        paddingVertical:l.buttonSpacing.large,
                         paddingHorizontal:l.spacing.xs,
-                        borderRadius:l.spacing.xs,
-                        //borderWidth:l.spacing.xs3,
+                        paddingVertical:l.spacing.s,
+                        borderBottomWidth:l.spacing.xs3,
+                        borderTopWidth:l.spacing.xs3,
+                        flexDirection:'row',
+                        justifyContent:'space-between',
+                        alignItems:'center',
                         borderColor:cl.basic.white,
-                        alignSelf:'center'
+                        width:l.screen.width
 
                     }}>
-                        <View style={{paddingBottom:l.spacing.xs, width:(l.screen.width / 2.5)}}>
-                            <Text style={[bS.body3 , {color:cl.basic.white, numberOfLines:1, ellipsizeMode:'tail' }]}>{Title}</Text>
-                            <Text style={[bS.body3,{color:dateTextColor}]}>{`${displayStartDate}`}</Text>
-                            <Text style={[bS.body3,{color:dateTextColor, numberOfLines:1, ellipsizeMode:'tail'}]}>{location}</Text>
-                        
-                        
-                        </View>
-                        <GuestIconsDisplay size={size} guestList={attendees}/>
-                        
-                    </View>
-                </View>
+                        <View style={{gap:l.spacing.xs, flexDirection:'row'}}>
+                            <View>
+                                <EventsIcon size={'large'} eventImage={eventImage} userImage={userImage}/>
+                            </View>
 
-                <RightArrowButton width={24} height={24} fill={cl.basic.white}/>
-                    
-            </View>
+                            <View style={{
+                                paddingVertical:l.buttonSpacing.large,
+                                paddingHorizontal:l.spacing.xs,
+                                borderRadius:l.spacing.xs,
+                                //borderWidth:l.spacing.xs3,
+                                borderColor:cl.basic.white,
+                                alignSelf:'center'
+
+                            }}>
+                                <View style={{paddingBottom:l.spacing.xs, width:(l.screen.width / 2.5)}}>
+                                    <Text numberOfLines={1} ellipsizeMode={'tail'} style={[bS.body3 , {color:cl.basic.white,  }]}>{Title}</Text>
+                                    <Text style={[bS.body3,{color:dateTextColor}]}>{`${displayStartDate}`}</Text>
+                                    <Text numberOfLines={1} ellipsizeMode={'tail'} style={[bS.body3,{color:cl.basic.white}]}>{location}</Text>
+                                
+                                
+                                </View>
+                                
+                                {attendees !== undefined &&<GuestIconsDisplay size={size} guestList={attendees}/>}
+                                
+                            </View>
+                        </View>
+
+                        <RightArrowButton width={24} height={24} fill={cl.basic.white}/>
+                            
+                    </View>
+                </Pressable>
+            </Link>
 
         )
     }else if(size == 'medium') {
@@ -238,7 +248,7 @@ function EventsDisplay(props) {
                         
                         
                         </View>
-                        <GuestIconsDisplay size={size} guestList={attendees}/>
+                        {attendees !== undefined &&<GuestIconsDisplay size={size} guestList={attendees}/>}
                     </View>
                 </View>
 

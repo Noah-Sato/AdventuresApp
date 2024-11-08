@@ -12,7 +12,9 @@ export const mainStyles = StyleSheet.create({
         height:'100%',
         
         
-    }
+    },
+
+    
 })
 
 

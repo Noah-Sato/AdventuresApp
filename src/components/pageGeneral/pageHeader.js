@@ -46,7 +46,7 @@ function PageHeader(props) {
                 <Back width={l.spacing.l} height={l.spacing.l} fill={cl.maroon.sixty}/>
             </TouchableOpacity>}
 
-            <Text style={[bS.h1,{color:cl.basic.white}]}>{label}</Text>
+            <Text numberOfLines={1}  ellipsizeMode={'tail'} style={[bS.h1,{color:cl.basic.white, width:l.screen.width /2, }]}>{label}</Text>
             </View>
 
             {closeIcon && 

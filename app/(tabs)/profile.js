@@ -1,4 +1,4 @@
-import { Pressable, SafeAreaView, ScrollView, StyleSheet, TextInput, View } from 'react-native';
+import { ActivityIndicator, Pressable, SafeAreaView, ScrollView, StyleSheet, TextInput, View } from 'react-native';
 
 import { bS } from '@theme/Styles'
 import cl from '@theme/Colours'
@@ -35,6 +35,8 @@ export default function Page() {
     if (session) getProfile()
   }, [session])
 
+  
+
   async function getProfile() {
     try {
       setLoading(true)
@@ -64,37 +66,14 @@ export default function Page() {
     }
   }
 
-  async function updateProfile({
-    username,
-    website,
-    avatar_url,
-  }) {
-    try {
-      setLoading(true)
-      if (!session?.user) throw new Error('No user on the session!')
-
-      const updates = {
-        id: session?.user.id,
-        username,
-        website,
-        avatar_url,
-        updated_at: new Date(),
-      }
-
-      const { error } = await supabase.from('profiles').upsert(updates)
-
-      if (error) {
-        throw error
-      }
-    } catch (error) {
-      if (error instanceof Error) {
-        Alert.alert(error.message)
-      }
-    } finally {
-      setLoading(false)
-    }
-  }
-
+  if (loading) {
+    return (
+        <View style={{height:l.screen.height, justifyContent:'center', alignItems:'center',alignContent:'center'}}>
+            <ActivityIndicator/>
+        </View>
+    )
+   
+}
 
 
     return( 
@@ -112,7 +91,9 @@ export default function Page() {
                 
         
         
-            <SquareButton size={'large'} label={'Edit Profile'}  fill={true} onPress={()=>{router.navigate('/editUserModal')}}/>
+            <SquareButton size={'large'} label={'Edit Profile'}  fill={true} onPress={()=>{
+              router.navigate('/editUserModal')
+              getProfile()}}/>
 
             <SquareButton label={'sign out'} onPress={() => supabase.auth.signOut()}/>
         </View>

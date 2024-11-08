@@ -13,7 +13,7 @@ export const Dictionary = {
     "tabs":{
         "Profile":"Profile",
         "Events":{
-            "Title":"Your Events"
+            "Title":"Events"
         }
 
     }

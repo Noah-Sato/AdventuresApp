@@ -6,11 +6,15 @@ import { HeaderButton } from '../../../AdventuresApp/src/components/HeaderButton
 import { TabBarIcon } from '../../../AdventuresApp/src/components/TabBarIcon';
 import { TabBarIcons } from '../../../AdventuresApp/src/theme/Icons';
 import { useAuth } from '~/contexts/AuthProvider';
+import { StreamChat } from 'stream-chat';
+
+import { useEffect } from 'react';
 
 
 export default function TabLayout() {
 
 
+  
   const  { isAuthenticated  } = useAuth();
 
   if ( !isAuthenticated ){
@@ -20,7 +24,10 @@ export default function TabLayout() {
   } 
 
   
+
+
     return (
+      
       <Tabs
         screenOptions={{
           headerShown: false,
@@ -41,13 +48,15 @@ export default function TabLayout() {
             ),
           }}
         />
-        <Tabs.Screen
-          name="chats"
-          options={{
-            title: 'Chats',
-            tabBarIcon: ({ color }) => <TabBarIcons icon={'chats'} fill={color} />,
-          }}
-        />
+        
+          <Tabs.Screen
+            name="chats"
+            options={{
+              title: 'Chats',
+              tabBarIcon: ({ color }) => <TabBarIcons icon={'chats'} fill={color} />,
+            }}
+          />
+        
         <Tabs.Screen
           name="profile"
           options={{
@@ -70,6 +79,7 @@ export default function TabLayout() {
           }}
         />
       </Tabs>
+      
     );
   
 }

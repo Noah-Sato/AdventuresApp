@@ -73,7 +73,7 @@ function UserIcon( props ) {
 
     if (useImage == undefined) {
 
-        borderColor = cl.maroon.standard_seventy
+        borderColor = props.borderColor ? props.borderColor: cl.maroon.standard_seventy
         return(
             <View style={[{
                 alignSelf:'center',
@@ -88,7 +88,7 @@ function UserIcon( props ) {
         )
     } else {
 
-        borderColor = cl.basic.white
+        borderColor = props.borderColor ? props.borderColor: cl.basic.white
         return(
             <View style={{
                 alignSelf:'center',

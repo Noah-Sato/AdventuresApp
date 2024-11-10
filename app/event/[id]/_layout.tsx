@@ -8,13 +8,16 @@ export const unstable_settings = {
   initialRouteName: '(event/[id])',
 };
 
-export default function AuthLayout() {
+export default function EventLayout() {
   
 
   
   return (
     <Stack>
-      <Stack.Screen name="[id]/index" options={{ headerShown: false  }} />
+
+      <Stack.Screen name="index" options={{ headerShown: false  }} />
+      
+      
      
     </Stack>
   );

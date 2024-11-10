@@ -39,14 +39,15 @@ function PageHeader(props) {
             flexDirection:'row',
             gap:l.spacing.s,
             alignItems:'center',
-            alignSelf:'center'
+            alignSelf:'center',
+            alignContent:'center'
         }}>
             {backIcon && 
             <TouchableOpacity onPress={onBackPressHandler}  >
                 <Back width={l.spacing.l} height={l.spacing.l} fill={cl.maroon.sixty}/>
             </TouchableOpacity>}
 
-            <Text numberOfLines={1}  ellipsizeMode={'tail'} style={[bS.h1,{color:cl.basic.white, width:l.screen.width /2, }]}>{label}</Text>
+            <Text numberOfLines={1}  ellipsizeMode={'tail'} style={[bS.h1,{color:cl.basic.white, width:l.screen.width /2, textAlign:'center' }]}>{label}</Text>
             </View>
 
             {closeIcon && 

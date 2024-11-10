@@ -123,7 +123,7 @@ function YourEventsDisplay(props) {
 
 
     return( 
-        <View>
+        <View style={{paddingBottom:l.spacing.xl3}}>
             <View style={{paddingBottom:l.spacing.xl3}}>
                 <FlatList
                     style={{paddingBottom:l.spacing.xl3}}       

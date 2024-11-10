@@ -6,7 +6,7 @@ module.exports = function (api) {
     presets: [['babel-preset-expo', { jsxImportSource: 'nativewind' }], 'nativewind/babel'],
 
     plugins: [
-      ["@babel/transform-react-jsx-source"],
+      "@babel/transform-react-jsx-source",
       ["module-resolver",
         {
             alias: {
@@ -20,6 +20,7 @@ module.exports = function (api) {
             },
         },
     ],
+    'react-native-reanimated/plugin',
     ],
   };
 };

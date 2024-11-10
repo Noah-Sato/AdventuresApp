@@ -61,7 +61,7 @@ export default function Page() {
 
 
     return( 
-        <View style={[mainStyles.page,{alignItems:'center',}]}>
+        <View style={[{backgroundColor:cl.maroon.dark_95,alignItems:'center',paddingBottom:l.spacing.xl}]}>
 
         <View style={{paddingBottom:l.spacing.xl}}>
             <PageHeader label={Dictionary.tabs.Events.Title}/>

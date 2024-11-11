@@ -21,8 +21,9 @@ export default function RootLayout() {
 
   return (
     
-    <AuthProvider>
-      <GestureHandlerRootView style={{ flex: 1 }}>
+    
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <AuthProvider>
         <ChatProvider>
           <Stack>
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
@@ -34,7 +35,8 @@ export default function RootLayout() {
             <Stack.Screen name="guestListModal" options={{ presentation: 'modal', headerShown: false  }} />
           </Stack>
         </ChatProvider>
-      </GestureHandlerRootView>
-    </AuthProvider>
+      </AuthProvider>  
+    </GestureHandlerRootView>
+    
   );
 }

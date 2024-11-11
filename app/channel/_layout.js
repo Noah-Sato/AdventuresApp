@@ -1,4 +1,5 @@
 import { Stack } from "expo-router";
+import { ChatProvider } from "stream-chat-expo";
 
 
 
@@ -6,8 +7,10 @@ import { Stack } from "expo-router";
 export default function ChannelStack() {
 
     return(
-        <Stack>
-            <Stack.Screen name='[cid]' options={{ headerShown: false }}/>
-        </Stack>
+        <ChatProvider>
+            <Stack>
+                <Stack.Screen name='[cid]' options={{ headerShown: false }}/>
+            </Stack>
+        </ChatProvider>
     )
 }

@@ -4,6 +4,7 @@
     "slug": "AdventuresApp",
     "version": "1.0.0",
     "scheme": "AdventuresApp",
+    //"entryPoint": "",
     "web": {
       "bundler": "metro",
       "output": "static",

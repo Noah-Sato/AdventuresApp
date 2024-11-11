@@ -26,6 +26,7 @@ export default function ChannelScreen() {
     
     const { client } = useChatContext();    
 
+    
     useEffect(()=> {
 
         const fetchChannel = async () => {

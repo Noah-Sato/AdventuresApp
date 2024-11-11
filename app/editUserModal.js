@@ -131,6 +131,8 @@ export default function Page() {
       if (error) {
         throw error
       }
+
+
     } catch (error) {
       if (error instanceof Error) {
         Alert.alert(error.message)

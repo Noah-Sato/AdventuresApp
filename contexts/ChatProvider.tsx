@@ -14,6 +14,8 @@ export default function ChatProvider({children}: PropsWithChildren) {
 
     const [isReady, setIsReady] = useState(false)
     const { profile } = useAuth();
+
+    
     
 
     useEffect(()=>{
@@ -26,11 +28,12 @@ export default function ChatProvider({children}: PropsWithChildren) {
             {
               id: profile.id,
               name: profile.full_name,
-              image: ''
+              image: profile.avatar_url,
             },
             client.devToken(profile.id),
           );
           setIsReady(true)
+          console.log(profile)
           
           /*const channel = client.channel('messaging', 'the_park', {
             name: 'The Park',

@@ -1,7 +1,7 @@
 
 
 import { Redirect, Stack } from 'expo-router';
-import { useAuth } from '~/contexts/AuthProvider';
+import { useAuth } from '/Users/main/Documents/Work/Projects/socialMediaProject/AdventuresApp/contexts/AuthProvider';
 
 export const unstable_settings = {
   // Ensure that reloading on `/modal` keeps a back button present.
@@ -10,6 +10,7 @@ export const unstable_settings = {
 
 export default function AuthLayout() {
   const  { isAuthenticated } = useAuth();
+  console.log('auth')
 
   if ( isAuthenticated ) {
     return <Redirect href="/(tabs)/profile" />

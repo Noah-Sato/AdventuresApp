@@ -1,4 +1,4 @@
-import { Link, Redirect, Tabs } from 'expo-router';
+import { Link, Redirect, Stack, Tabs } from 'expo-router';
 import cl from '../../../AdventuresApp/src/theme/Colours'
 import { supabase } from '~/utils/supabase'
 
@@ -9,17 +9,18 @@ import { useAuth } from '~/contexts/AuthProvider';
 import { StreamChat } from 'stream-chat';
 
 import { useEffect } from 'react';
+import ChatProvider from '~/contexts/ChatProvider';
 
 
 export default function TabLayout() {
 
-
+  console.log('tabs')
   
   const  { isAuthenticated  } = useAuth();
 
   if ( !isAuthenticated ){
-
-  return <Redirect href='/(auth)/login'/>
+    
+  return <Redirect href='./(auth)/login'/>
 
   } 
 
@@ -27,7 +28,7 @@ export default function TabLayout() {
 
 
     return (
-      
+      <ChatProvider>
       <Tabs
         screenOptions={{
           headerShown: false,
@@ -79,6 +80,11 @@ export default function TabLayout() {
           }}
         />
       </Tabs>
+
+      
+       
+      
+      </ChatProvider>
       
     );
   

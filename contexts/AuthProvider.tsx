@@ -7,6 +7,7 @@ import { ActivityIndicator } from "react-native";
 const AuthContext = createContext({
   session: null,
   user: null,
+  isAuthenticated: null,
   profile: null,
 
 });

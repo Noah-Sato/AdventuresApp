@@ -35,26 +35,24 @@ function PageHeader(props) {
                 
         } ]}>
 
-            <View style={{
-            flexDirection:'row',
-            gap:l.spacing.s,
-            alignItems:'center',
-            alignSelf:'center',
-            alignContent:'center'
-        }}>
+            <View style={{width:l.spacing.l}}>
             {backIcon && 
             <TouchableOpacity onPress={onBackPressHandler}  >
                 <Back width={l.spacing.l} height={l.spacing.l} fill={cl.maroon.sixty}/>
             </TouchableOpacity>}
-
-            <Text numberOfLines={1}  ellipsizeMode={'tail'} style={[bS.h1,{color:cl.basic.white, width:l.screen.width /2, textAlign:'center' }]}>{label}</Text>
             </View>
 
+
+
+            <Text numberOfLines={1}  ellipsizeMode={'tail'} style={[bS.h1,{color:cl.basic.white, width:l.screen.width /2, textAlign:'center' }]}>{label}</Text>
+            
+            <View style={{width:l.spacing.l}}>
             {closeIcon && 
             <TouchableOpacity onPress={onClosePressHandler}  >
                 <Close width={l.spacing.l} height={l.spacing.l} fill={cl.maroon.sixty}/>
             </TouchableOpacity>
             }
+            </View>
         </View>
 
     )

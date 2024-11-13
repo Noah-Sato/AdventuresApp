@@ -17,6 +17,8 @@ import { Dictionary } from '@config/Dictionary'
 import { Text } from '@src/components/Text';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { PageHeader } from '@components/pageGeneral/pageHeader'
+
 
 
 export default function ChannelScreen() {
@@ -43,12 +45,19 @@ export default function ChannelScreen() {
     }
     
     return(
-        <View style={{paddingBottom:insets.bottom}}>
+    <View style={[{backgroundColor:cl.maroon.dark_95, paddingBottom:insets.bottom, height:l.screen.height/1.15}]}>
+        <View style={{paddingBottom:l.spacing.s}}>
+        <PageHeader back={true} label={'chat header '} onBackPress={()=>{router.navigate('../')}}/>
+        </View>
+        
+        
+            
             <Channel channel={channel}>
                 <MessageList/>
                 <MessageInput/>
             </Channel>
-        </View>
+        
+    </View>
     )
 
 }

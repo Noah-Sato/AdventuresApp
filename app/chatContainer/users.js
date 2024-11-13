@@ -9,11 +9,13 @@ import { bS } from '@theme/Styles'
 import cl from '@theme/Colours'
 import l from '@theme/Layout'
 
-import { mainStyles } from "../src/theme/Styles";
+import { mainStyles } from "@theme/Styles";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import Close from '@assets/ButtonIcons/close_24px_outlined.svg'
 import Back from '@assets/ButtonIcons/arrow_back_ios_24px_outlined.svg'
+
+import { ListItem }from "@components/listDisplays/UserListItem";
 
 
 
@@ -84,14 +86,22 @@ export default function UsersScreen() {
     return(
         <View style={[mainStyles.page]}>
 
-            <View style={{paddingHorizontal:l.margins.page}}>
+            <View style={{paddingHorizontal:l.margins.page,}}>
                 <PageHeader back={true} onBackPress={()=>{router.navigate('../')}} label={'users'} />
             </View>
 
 
             <FlatList
+                style={{paddingTop:l.spacing.m}}
+                //contentContainerStyle={{}}
                 data={users}
-                renderItem={({item}) => <Text style={{color:cl.basic.white}}>{item.full_name}</Text>}
+                renderItem={({item}) => {
+                    console.log(item)
+                
+                    return(
+                        <ListItem user={item}/>
+                    )       
+            }}
             />
         </View>
     )

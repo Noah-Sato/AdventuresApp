@@ -76,11 +76,11 @@ export default function Page() {
                 paddingHorizontal:l.margins.page, 
                 width:l.screen.width,
                 alignItems:'center'}}>
-                <PageHeader label={'chats'} onPress={()=>{router.navigate('/users')}}/>
+                <PageHeader label={'chats'} onPress={()=>{router.navigate('/chatContainer/users')}}/>
             </View>
             <ChannelList
                 filters={{members: {$in: [user.id]}}} 
-                onSelect={(channel) => router.push(`/(tabs)/channel/${channel.cid}`)}/>
+                onSelect={(channel) => router.push(`/chatContainer/channel/${channel.cid}`)}/>
         </View>
     )
 }

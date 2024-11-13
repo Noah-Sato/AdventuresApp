@@ -27,7 +27,7 @@ export  function ListItem ({user}) {
         });
 
         await channel.watch();
-        router.replace(`/channel/${channel.cid}`)
+        router.replace(`/chatContainer/channel/${channel.cid}`)
     }
 
 

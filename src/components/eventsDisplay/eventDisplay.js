@@ -36,6 +36,8 @@ function EventsDisplay(props) {
     const [attendees, setAttendees ] = useState([])
     const [userImage, setUserImage ] = useState(undefined)
 
+    const [attendeeImage, setAttendeeImage ] = useState()
+
 
 
 
@@ -65,15 +67,35 @@ function EventsDisplay(props) {
     
 
     const fetchAttendees = async () => {
+
+        const fetchAttendeeImages = async (path) => {
+            const {data, error} = await supabase.storage.from('avatars').getPublicUrl(path);
+
+            console.log(data.publicUrl, 'data')
+
+            
+            const returnImage = data.publicUrl
+
+            return(returnImage)
+        }
+
+
+
         const {data, error } = await supabase.from('attendance').select('*, profiles(*)').eq('event_id', eventID);
         
         let useAttendees
+        let image
+
+        
+
         if (data !== null ) {
             useAttendees = data.map((x) => {
+
+                
                 return {
                 id: x.profiles.id,
-                image: x.profiles.avatar_url
-
+                image: x.profiles.avatar_url,
+                confirmed:x.confirmed
                 }
             })
         }
@@ -84,7 +106,9 @@ function EventsDisplay(props) {
     const fetchUserImage = async ({userID}) => {
         const {data: data, error}= await supabase.from('profiles').select('avatar_url').eq('id',userID).single()
         if (data !== null){
-            setUserImage(data.avatar_url)
+            const {data:storageData, error} = await supabase.storage.from('avatars').getPublicUrl(data.avatar_url)
+            
+            setUserImage(storageData.publicUrl)
         }
     }
 
@@ -146,12 +170,20 @@ function EventsDisplay(props) {
         const DisplayedGuests = guestList.slice(0,maxShown)
         
         
-        
+        let borderColor
         return (
             <View style={{flexDirection:'row',gap:l.spacing.xs2, alignItems:'center' }}>
                 {DisplayedGuests.map((item, index) => {
+
+                    if ( item.confirmed == true ) {
+                        borderColor = cl.green.light_thirty
+                    } else if ( item.confirmed == false ) {
+                        borderColor = cl.red.light_thirty
+                    } else {
+                        borderColor = cl.basic.white
+                    }
                     
-                    return <UserIcon userImage={item.image} key={index}/>
+                    return <UserIcon  borderColor={borderColor} userImage={item.image} key={index}/>
                 })}
 
                 {(length > maxShown) && <Text style={[bS.body3, {color:cl.basic.white}]}>{`+${length-maxShown}`}</Text>}

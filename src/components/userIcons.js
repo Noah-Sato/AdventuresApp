@@ -5,12 +5,41 @@ import { Text } from './Text'
 import { View, TouchableOpacity, StyleSheet  } from 'react-native';
 import Person from '@assets/profileIcons/person_24px.svg'
 import { Image } from 'expo-image';
+import { useEffect, useState } from 'react';
+import { supabase } from '~/utils/supabase'
 
 
 
 function UserIcon( props ) {
     const size = props.size ? props.size : 'small'
     const useImage = props.userImage ? props.userImage : undefined
+
+    const [image, setImage] = useState()
+
+
+
+    useEffect(()=>{
+        if(useImage !== undefined){
+            fetchImage(useImage)
+        }
+        
+    },[useImage])
+
+    const fetchImage = async (useImage) => {   
+
+        const {data, error} = await supabase.storage
+        .from('avatars')
+        .getPublicUrl(useImage)
+
+        
+
+        setImage(data.publicUrl)
+    }
+
+
+    if (useImage) {
+
+    }
     
     
     const iconSizes = {
@@ -100,7 +129,7 @@ function UserIcon( props ) {
 
                     <Image 
                         style={[pictureStyles, {borderRadius:l.roundness.max,}]}
-                        source={{uri:useImage}}
+                        source={{uri:image}}
                         contentFit="cover"
                         transition={1000}
                     />

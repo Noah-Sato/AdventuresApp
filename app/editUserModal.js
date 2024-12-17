@@ -21,6 +21,10 @@ import { useAuth } from '~/contexts/AuthProvider';
 import { router } from 'expo-router';
 import * as ImagePicker from 'expo-image-picker'
 
+import Avatar from '@components/profile/Avatar.tsx'
+
+
+
 
 
 
@@ -168,18 +172,18 @@ export default function Page() {
                     
                     
                     <View>
-                      <UserIcon userImage={avatarUrl} size={'profile'}/>
+                      
+                      <Avatar
+                        size={200}
+                        url={avatarUrl}
+                        onUpload={(url) => {
+                          setAvatarUrl(url)
+                          updateProfile({username, website, avatar_url:url, full_name:fullName})
+                        }}
+                        />
                       
 
-                        <Pressable onPress={uploadAvatar}style={{
-                            position:'absolute',
-                            bottom:-l.spacing.xs2,
-                            right:l.spacing.xl2 * 2 - l.spacing.xs2,
-                            padding:l.spacing.xs2
-                            
-                        }}>
-                            <IconContainer size={'small'} icon={Edit}/>
-                        </Pressable>
+                        
                     </View>
 
 
@@ -188,7 +192,7 @@ export default function Page() {
                         gap:l.spacing.m
                     }}>
                 
-                    <View style={{alignSelf:'stretch'}}>
+                    <View style={{alignSelf:'stretch', gap:l.spacing.xs}}>
                         <Text style={[bS.body3,{color:cl.basic.white}]}>{'Your email'} </Text>
                         <View style={{
                         borderWidth:l.spacing.xs3,
@@ -215,7 +219,7 @@ export default function Page() {
                         </View>
                     </View>
 
-                    <View style={{alignSelf:'stretch'}}>
+                    <View style={{alignSelf:'stretch', gap:l.spacing.xs}}>
                         <Text style={[bS.body3,{color:cl.basic.white}]}>{'Your username'} </Text>
                         <View style={{
                         borderWidth:l.spacing.xs3,
@@ -255,7 +259,7 @@ export default function Page() {
                 
                 
                 
-                    <View style={{alignSelf:'stretch'}}>
+                    <View style={{alignSelf:'stretch', gap:l.spacing.xs}}>
                         <Text style={[bS.body3,{color:cl.basic.white}]}>{'Your name'} </Text>
                         <View style={{
                         borderWidth:l.spacing.xs3,

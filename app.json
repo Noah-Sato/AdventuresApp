@@ -1,9 +1,9 @@
 {
   "expo": {
-    "name": "AdventuresApp",
-    "slug": "AdventuresApp",
+    "name": "adventuresapp",
+    "slug": "adventuresapp",
     "version": "1.0.0",
-    "scheme": "AdventuresApp",
+    "scheme": "adventuresapp",
     //"entryPoint": "",
     "web": {
       "bundler": "metro",

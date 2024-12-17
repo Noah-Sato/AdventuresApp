@@ -4,6 +4,8 @@ import l from '@theme/Layout'
 
 import { View, TouchableOpacity, StyleSheet, Image  } from 'react-native';
 import Person from '@assets/tabBarIcons/whatshot_24px.svg'
+import { supabase } from '~/utils/supabase'
+import { useEffect, useState } from 'react';
 
 
 
@@ -12,6 +14,12 @@ function EventsIcon( props ) {
     const size = props.size ? props.size : 'small'
     const eventImage = props.eventImage ? props.eventImage : undefined
     const userImage = props.userImage ? props.userImage : undefined
+
+    const [userUseImage, setUserUseImage] = useState()
+
+
+
+    
     
     
     const iconSizes = {
@@ -97,7 +105,9 @@ function EventsIcon( props ) {
     
 
     const UserIcon = ({userImage,iconSize,pictureStyles,iconStyles}) => {
-        if (userImage == undefined) {
+        if (userImage == undefined || userImage == "") {
+
+            
 
             borderColor = cl.maroon.standard_seventy
             return(

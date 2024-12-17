@@ -17,6 +17,11 @@ import YouTube from "@assets/Social/Ico_Youtube_24.svg"
 
 
 
+//Misc Icons 
+import Search from '@assets/MiscIcons/SearchIcon.svg'
+
+
+
 import RightArrowButton from '@assets/ButtonIcons/arrow_forward_24px.svg'
 
 
@@ -97,4 +102,28 @@ const social = {
   return <SocialIcon width={size} height={size} fill={fill}/>;
   };
 
-  export {SocialIcons, TabBarIcons}
+
+
+
+
+
+
+const misc = {
+    search:{
+      component:Search,
+      size:24,
+    }
+}
+
+function MiscIcons ( props ) {
+  const iconInfo = misc[props.icon]
+  const size = props.size ? props.size: (iconInfo.size)
+  const fill = props.fill ? props.fill: 'black'
+const SocialIcon = iconInfo.component;
+return <SocialIcon width={size} height={size} fill={fill}/>;
+}; 
+
+
+
+
+export {SocialIcons, TabBarIcons, MiscIcons}

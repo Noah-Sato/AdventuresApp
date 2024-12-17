@@ -55,6 +55,7 @@ export default function Page() {
         setUsername(data.username)
         setWebsite(data.website)
         setAvatarUrl(data.avatar_url)
+        console.log(data.avatar_url)
         setFullName(data.full_name)
       }
     } catch (error) {
@@ -87,7 +88,8 @@ export default function Page() {
                 }}>
                 
                 <PageHeader label={Dictionary.tabs.Profile}/>
-                <UserIcon userImage={avatarUrl} size={'profile'}/>
+                
+                
                 
         
         

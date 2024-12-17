@@ -15,7 +15,7 @@ import l from '@theme/Layout'
 
 import  { EventsPageDisplay, YourEventsDisplay }  from '@components/listDisplays/eventsVertDisplay';
 import { PageHeader } from '@components/pageGeneral/pageHeader'
-import { Text } from '@src/components/Text';
+import { SquareButton }from '@components/Buttons';
 
 import { TabDisplay } from '@components/pageGeneral/TabDisplay';
 
@@ -58,7 +58,7 @@ export default function Page() {
         
     }
 
-
+    // add plus icon to page header for adding events. 
 
     return( 
         <View style={[{backgroundColor:cl.maroon.dark_95,alignItems:'center',paddingBottom:l.spacing.xl}]}>
@@ -68,10 +68,9 @@ export default function Page() {
         </View>   
 
         
-           
-        
-        
-            <TabDisplay tabData={profileSliderConfig}  />
+          <TabDisplay tabData={profileSliderConfig}  />
+       
+            
 
 
 

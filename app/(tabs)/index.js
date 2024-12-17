@@ -1,4 +1,4 @@
-import { Redirect, Stack } from 'expo-router';
+import { Redirect, router, Stack } from 'expo-router';
 import { SafeAreaView, StyleSheet, View } from 'react-native';
 import { Text } from '@src/components/Text';
 import l from '@theme/Layout'
@@ -9,6 +9,7 @@ import { useEffect, useState } from 'react';
 import { SquareButton }from '@components/Buttons';
 import { UserIcon } from '@components/userIcons';
 import { useAuth } from '~/contexts/AuthProvider';
+
 
 export default function Page() {
     const insets = useSafeAreaInsets()
@@ -29,6 +30,8 @@ export default function Page() {
             <View style={{gap:l.spacing.s, alignItems:'center'}}>
                 
                 <SquareButton size={'large'} label={'Home Page'}  fill={true} />
+
+                <SquareButton size={'large'} label={'Create an event'}  fill={true} onPress={()=>{router.navigate('/createEvent')}}/>
                 
 
                 

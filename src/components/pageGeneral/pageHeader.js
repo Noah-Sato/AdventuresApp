@@ -22,6 +22,8 @@ function PageHeader(props) {
     const closeIcon = props.close ? props.close : false
     const backIcon = props.back ? props.back : false
 
+    const fontSize = props.fontSize ? props.fontSize: bS.h1
+
     
     const onBackPressHandler = () => props.onBackPress();
     const onClosePressHandler = () => props.onClosePress();
@@ -44,7 +46,7 @@ function PageHeader(props) {
 
 
 
-            <Text numberOfLines={1}  ellipsizeMode={'tail'} style={[bS.h1,{color:cl.basic.white, width:l.screen.width /2, textAlign:'center' }]}>{label}</Text>
+            <Text numberOfLines={1}  ellipsizeMode={'tail'} style={[fontSize,{color:cl.basic.white, width:l.screen.width /2, textAlign:'center' }]}>{label}</Text>
             
             <View style={{width:l.spacing.l}}>
             {closeIcon && 

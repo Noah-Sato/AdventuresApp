@@ -19,6 +19,7 @@ import YouTube from "@assets/Social/Ico_Youtube_24.svg"
 
 //Misc Icons 
 import Search from '@assets/MiscIcons/SearchIcon.svg'
+import Close from '@assets/ButtonIcons/close_24px_outlined.svg'
 
 
 
@@ -111,6 +112,11 @@ const social = {
 const misc = {
     search:{
       component:Search,
+      size:24,
+    },
+
+    close:{
+      component: Close,
       size:24,
     }
 }

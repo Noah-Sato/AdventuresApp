@@ -85,6 +85,7 @@ function SquareButton( props ) {
                 flexDirection:'row',
                 gap:l.spacing.xs2,
                 borderWidth: 1, 
+                borderRadius:l.spacing.xs
                 
                 
                 

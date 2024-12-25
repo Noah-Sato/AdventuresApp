@@ -20,6 +20,7 @@ import YouTube from "@assets/Social/Ico_Youtube_24.svg"
 //Misc Icons 
 import Search from '@assets/MiscIcons/SearchIcon.svg'
 import Close from '@assets/ButtonIcons/close_24px_outlined.svg'
+import MapPin from '@assets/MiscIcons/MapPin.svg'
 
 
 
@@ -118,6 +119,12 @@ const misc = {
     close:{
       component: Close,
       size:24,
+    },
+
+    map:{
+      component:MapPin,
+      size:24,
+
     }
 }
 

@@ -1,10 +1,12 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { View, TextInput, TouchableOpacity, Modal, Animated } from "react-native";
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
-import { router } from "expo-router";
+import { router, useFocusEffect } from "expo-router";
 
 import 'react-native-get-random-values';
 import { v4 as uuidv4 } from 'uuid';
+import * as Location from 'expo-location';
+
 
 import { mainStyles } from '@src/theme/Styles';
 import { bS } from '@theme/Styles'
@@ -19,17 +21,33 @@ import { MiscIcons } from '@theme/Icons'
 
 
 import Edit from '@assets/ButtonIcons/border_color_24px_outlined.svg'
+import { useEventsStore } from "../../src/store/useStore";
 
-
-
+const API_KEY = process.env.EXPO_PUBLIC_GOOGLE_API_KEY
 
 
 export default function CreateEventPage() {
 
+    const globalLocation = useEventsStore((state) => state.location)
+    const setGlobalLocation = useEventsStore((state) => state.setLocation)
+    const resetGlobalLocation = useEventsStore((state) => state.resetLocation)
+
+    const globalStartDate = useEventsStore((state) => state.startDate)
+    const setGlobalStartDate = useEventsStore((state) => state.setStartDate)
+    const resetGlobalStartDate = useEventsStore((state) => state.resetStartDate)
+
+    
+    
+
     const [startDate, setStartDate] = useState(undefined)
-    const [location, setLocation] = useState(undefined)
+    const [eventLocation, setEventLocation] = useState({})
     const [guests, setGuests] = useState(undefined)
     const [dateModalShow, setDateModalShow] = useState(false)
+    
+    const [myLat, setMyLatitude] = useState(null)
+    const [myLong, setMyLongitude] = useState(null)
+    const [errorMsg, setErrorMsg] = useState(null);
+    const [locationSelected, setLocationSelected] = useState(false)
 
     const openDateModal = () => {
         setDateModalShow(true)
@@ -39,6 +57,62 @@ export default function CreateEventPage() {
         setDateModalShow(false)
     }
 
+
+    
+    
+
+    useEffect(() => {
+
+
+        //console.log(globalLocation, 'hhhhhhh')
+        
+
+        async function getCurrentLocation() {
+        
+        let { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== 'granted') {
+            setErrorMsg('Permission to access location was denied');
+            return;
+        }
+
+        let location = await Location.getCurrentPositionAsync({});
+        
+        
+        setMyLatitude(location.coords.latitude)
+        setMyLongitude(location.coords.longitude)
+        }
+
+        getCurrentLocation();
+        
+        console.log('use bottomSheet for whos invited friends selector')
+    }, []);
+
+
+    useFocusEffect(
+        
+        useCallback(() => {
+          // Invoked whenever the route is focused.
+          console.log('Hello, Im focused!', globalLocation);
+
+
+         if (globalLocation !== null && globalLocation !== undefined) {
+            setEventLocation(globalLocation)
+            setLocationSelected(true)
+         } else {
+            setLocationSelected(false)
+         }
+    
+          // Return function is invoked whenever the route gets out of focus.
+          return () => {
+            console.log('This route is now unfocused.');
+
+          };
+        }, [globalLocation])
+       );
+
+
+
+    
 
 
     const DateModal = () => {
@@ -87,8 +161,12 @@ export default function CreateEventPage() {
                             gap:l.spacing.s
 
                         }}>
-                            <SquareButton label={`In the Next Week`} fill={true} size={'medium'}/>
-                            <SquareButton label={`Further in the future`} fill={true} size={'medium'}/>
+                            <SquareButton label={`In the Next Week`} fill={true} size={'medium'} />
+                            <SquareButton label={`Further in the future`} fill={true} size={'medium'} onPress={()=>{
+                                closeDateModal()
+                                setGlobalLocation(eventLocation)
+                                router.navigate('/createEvent/largeCalendar')
+                            }} />
 
                         </View>
                         
@@ -101,25 +179,81 @@ export default function CreateEventPage() {
 
 
     const GooglePlacesInput = () => {
+        
+        
+
         return (
           <GooglePlacesAutocomplete
+            value={'yo'}
             placeholder='Search'
             placeholderTextColor={cl.red.light_thirty}
             onPress={(data, details = null) => {
               // 'details' is provided when fetchDetails = true
-              console.log(data, details);
+
+            const location = {
+                name: details.name,
+                id: data.place_id,
+                address: details.formatted_address,
+                geometry: details.geometry
+            }
+
+            setEventLocation(location)
+            setLocationSelected(true)
+            
+
+
             }}
             query={{
-              key: 'AIzaSyA5jpsrHdv3Xrx3fWexVtht9qadBsxLI0A',
+              key: API_KEY,
               language: 'en',
               types: 'establishment',
-              maxResultCount: 9
+              locationbias:`circle:5000@${myLat},${myLong}`,
+              //rankby:'distance',
+              maxResultCount: 5,
+
             }}
             minLength={2}
             autoFocus={false}
             returnKeyType={'default'}
             fetchDetails={true}
+            renderRow={(data, index) => {
+
+
+                    //console.log(data)
+                return(
+                <View style={{
+                    flex:1,
+                    width:'100%',
+                    flexDirection:'row',
+                    backgroundColor:cl.maroon.dark_95,
+                    gap:l.spacing.xs
+                }}>
+                    <MiscIcons icon={'map'} fill={cl.basic.white
+
+                    }/>
+                    <Text numberOfLines={1} ellipsizeMode={'tail'} style={[bS.h7,{color:cl.basic.white, width:l.screen.width - (l.spacing.m * 7)}]}>{data.description}</Text>
+                </View>
+                
+                )
+            }}
             styles={{
+                container:{
+                    width:'100%',
+                    backgroundColor:'red'
+                },
+
+                listView:{
+                    width:'100%'
+                },
+                separator:{
+                    backgroundColor:cl.maroon.dark_95
+                },
+                row:{
+                    backgroundColor:cl.maroon.dark_95,
+                    width:'100%',
+                    
+
+                },
                 textInputContainer: {
                 backgroundColor: cl.maroon.dark_95,
                 
@@ -141,6 +275,8 @@ export default function CreateEventPage() {
                 predefinedPlacesDescription: {
                 color: cl.grey.fourty,
                 },
+
+
                 
             }}
           />
@@ -148,8 +284,44 @@ export default function CreateEventPage() {
       };
 
 
+
+    const locationSelectable = () => {
+        setLocationSelected(false)
+    }
+
+    const locationNotSelectable = () => {
+        setLocationSelected(true)
+    }
+    
+
+    const LocationSelector = () => {
+
+
+
+        console.log(locationSelected, 'selected ?')
+
+        if (!locationSelected) {
+            return <GooglePlacesInput/>
+        } else {
+
+            return(
+                <TouchableOpacity style={{paddingVertical:l.spacing.xs - l.spacing.xs3}} onPress={()=>{
+                    setLocationSelected(false)
+                    setEventLocation({})}}>
+                    <Text style={[bS.body1,{color:cl.basic.white}]}>{eventLocation.name}</Text>
+                </TouchableOpacity>
+            )
+
+        }
+        
+
+
+
+    }
+
+
     return(
-        <View style={[mainStyles.page, {height:l.screen.heigh, width:l.screen.width }]}>
+        <View style={[mainStyles.page, {height:l.screen.height, width:l.screen.width }]}>
         
         
                 
@@ -180,7 +352,7 @@ export default function CreateEventPage() {
                                 <View style={{paddingTop:l.spacing.xs - l.spacing.xs3}}>
                                     <MiscIcons icon={'search'} fill={cl.red.light_thirty}/>
                                 </View>
-                                <GooglePlacesInput/>
+                                <LocationSelector/>
                                 <View style={{height:l.spacing.m}}/>
 
                             

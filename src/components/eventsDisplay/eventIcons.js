@@ -62,12 +62,13 @@ function EventsIcon( props ) {
             size:(l.spacing.l * 6)+ (l.spacing.xs * 2)
         },*/
     }
-    let iconSize 
+    let iconSize
     let iconStyles = {}
     let pictureStyles = {}
     let userIconStyles = {}
     let userIconSize
     let userPictureStyles = {}
+    let userIconOffset = -4
 
     switch( size ) {
         case 'small':

@@ -15,8 +15,7 @@ export default function CreationLayout() {
 
       <Stack.Screen name="index" options={{ headerShown: false  }} />
       <Stack.Screen name="largeCalendar" options={{headerShown : false}}/>
-      
-      
+
      
     </Stack>
   );

@@ -82,20 +82,15 @@ function EventsDisplay(props) {
 
 
         const {data, error } = await supabase.from('attendance').select('*, profiles(*)').eq('event_id', eventID);
-        
-        let useAttendees
-        let image
 
-        
+        let useAttendees
 
         if (data !== null ) {
             useAttendees = data.map((x) => {
-
-                
                 return {
                 id: x.profiles.id,
                 image: x.profiles.avatar_url,
-                confirmed:x.confirmed
+                confirmed: x.status === 'going' ? true : x.status === 'declined' ? false : null
                 }
             })
         }
@@ -352,15 +347,16 @@ function EventListDisplay(props) {
     const Guests = props.guestList ? props.guestList: dummyGuestList
 
     let displayStartDate = ''
+    let displayEndDate = ''
     let dateTextColor
     if (isTomorrow(startDate)){
 
         if (isSameDay(startDate,endDate)) {
             displayStartDate = 'Tomorrow ' + format(startDate,'p - ' )
-            displayEndDate = format(endDate,'p')            
+            displayEndDate = format(endDate,'p')
         } else {
             displayStartDate = 'Tomorrow ' + format(startDate,'p - ' )
-            displayEndDate = format(endDate,'do MMM, p') 
+            displayEndDate = format(endDate,'do MMM, p')
         }
 
         

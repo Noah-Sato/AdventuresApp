@@ -5,7 +5,16 @@
 
     "baseUrl": ".",
     "paths": {
-      "~/*": ["*"]
+      "~/*": ["*"],
+      "@assets/*": ["assets/*"],
+      "@theme/*": ["src/theme/*"],
+      "@components/*": ["src/components/*"],
+      "@store/*": ["src/store/*"],
+      "@config/*": ["src/config/*"],
+      "@hooks/*": ["src/hooks/*"],
+      "@src/*": ["src/*"],
+      "@contexts/*": ["contexts/*"],
+      "@types/*": ["types/*"]
     }
   },
   "include": ["**/*.ts", "**/*.tsx", ".expo/types/**/*.ts", "expo-env.d.ts"]

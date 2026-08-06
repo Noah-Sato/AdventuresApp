@@ -1,56 +1,13 @@
-import { bS } from '@theme/Styles'
-import cl from '@theme/Colours'
 import l from '@theme/Layout'
 
-import {compareAsc  } from "date-fns";
+import { View, FlatList, ActivityIndicator } from 'react-native';
+import { EventsDisplay } from '@components/eventsDisplay/eventDisplay';
+
+import { useUpcomingEvents, useMyEvents } from '@hooks/useEvents';
 
 
-import { View, TouchableOpacity, StyleSheet, FlatList, ActivityIndicator  } from 'react-native';
-import { EventsDisplay, EventListDisplay } from '@components/eventsDisplay/eventDisplay';
-import { useEffect, useState } from 'react';
-
-
-import { supabase } from '~/utils/supabase'
-import { useAuth } from '~/contexts/AuthProvider';
-
-
-
-function EventsPageDisplay(props) {
-    const [data, setData ] = useState([])
-    const [loading, setLoading] = useState(false)
-    
-
-    const { session } = useAuth()
-
-    const userID =  session?.user.id
-
-    useEffect(() => {
-        
-        fetchEvents();
-        
-        
-        
-    },[])
-
-
-    
-
-    const fetchEvents = async () => {
-        // fetch invited events only... changes to come
-        setLoading(true)
-
-
-        const {data, error} = await supabase.from('attendance').select('id,events(*)').eq('user_id', userID) 
-        
-       
-        
-        setData(data)
-        setLoading(false)
-        
-    }
-
-    
-
+function EventsPageDisplay() {
+    const { events, loading } = useUpcomingEvents()
 
     if (loading) {
         return (
@@ -58,59 +15,25 @@ function EventsPageDisplay(props) {
                 <ActivityIndicator/>
             </View>
         )
-       
     }
 
-
-    return( 
+    return(
         <View>
             <FlatList
                 showsVerticalScrollIndicator={false}
                 horizontal={false}
-                data={data}
-                renderItem={({item,index}) =>( <EventsDisplay  id={item.events.id} userID={item.events.user_id} startDate={item.events.date} location={item.events.location} key={index} eventTitle={item.events.title} eventImage={item.events.image_uri}/> )}
+                data={events}
+                renderItem={({item}) =>( <EventsDisplay id={item.id} userID={item.host_id} startDate={item.start_date} endDate={item.end_date} location={item.formatted_address} eventTitle={item.title} eventImage={item.image_url}/> )}
                 keyExtractor={item => item.id}
             />
-
         </View>
-
     )
 }
 
 
 
-function YourEventsDisplay(props) {
-
-    const [data, setData ] = useState([])
-    const [loading, setLoading] = useState(false)
-    
-
-    const { session } = useAuth()
-
-    const userID =  session?.user.id
-
-    useEffect(() => {
-        
-        fetchYourEvents();
-        
-        
-        
-    },[])
-
-    const fetchYourEvents = async () => {
-        // fetch invited events only... changes to come
-        setLoading(true)
-
-
-        const {data, error} = await supabase.from('events').select('*').eq('user_id', userID) 
-        
-        
-        
-        setData(data)
-        setLoading(false)
-        
-    }
-
+function YourEventsDisplay() {
+    const { events, loading } = useMyEvents()
 
     if (loading) {
         return (
@@ -118,23 +41,19 @@ function YourEventsDisplay(props) {
                 <ActivityIndicator/>
             </View>
         )
-       
     }
 
-
-    return( 
+    return(
         <View style={{paddingBottom:l.spacing.xl3}}>
             <View style={{paddingBottom:l.spacing.xl3}}>
                 <FlatList
-                    style={{paddingBottom:l.spacing.xl3}}       
+                    style={{paddingBottom:l.spacing.xl3}}
                     showsVerticalScrollIndicator={false}
                     horizontal={false}
-                    data={data}
-                    renderItem={({item,index}) =>( <EventsDisplay  id={item.id} userID={item.user_id} startDate={item.date} location={item.location} key={index} eventTitle={item.title} eventImage={item.image_uri}/> )}
+                    data={events}
+                    renderItem={({item}) =>( <EventsDisplay id={item.id} userID={item.host_id} startDate={item.start_date} endDate={item.end_date} location={item.formatted_address} eventTitle={item.title} eventImage={item.image_url}/> )}
                     keyExtractor={item => item.id}
                 />
-
-                
             </View>
             <View style={{height:l.spacing.xl3}}/>
         </View>

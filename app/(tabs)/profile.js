@@ -97,6 +97,10 @@ export default function Page() {
               router.navigate('/editUserModal')
               getProfile()}}/>
 
+            <SquareButton label={'Friends'} onPress={() => router.navigate('/friends')}/>
+            <SquareButton label={'Memory Bank'} onPress={() => router.navigate('/memoryBank')}/>
+            <SquareButton label={'Settings'} onPress={() => router.navigate('/settings')}/>
+
             <SquareButton label={'sign out'} onPress={() => supabase.auth.signOut()}/>
         </View>
     </View>

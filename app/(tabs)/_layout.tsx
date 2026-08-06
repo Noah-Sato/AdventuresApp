@@ -1,41 +1,30 @@
-import { Link, Redirect, Stack, Tabs } from 'expo-router';
-import cl from '../../../AdventuresApp/src/theme/Colours'
-import { supabase } from '~/utils/supabase'
+import { Link, Redirect, Tabs } from 'expo-router';
+import cl from '@theme/Colours'
 
-import { HeaderButton } from '../../../AdventuresApp/src/components/HeaderButton';
-import { TabBarIcon } from '../../../AdventuresApp/src/components/TabBarIcon';
-import { TabBarIcons } from '../../../AdventuresApp/src/theme/Icons';
+import { HeaderButton } from '@components/HeaderButton';
+import { TabBarIcons } from '@theme/Icons';
 import { useAuth } from '~/contexts/AuthProvider';
-import { StreamChat } from 'stream-chat';
-
-import { useEffect } from 'react';
-import ChatProvider from '~/contexts/ChatProvider';
 
 
 export default function TabLayout() {
 
-  console.log('tabs')
-  
   const  { isAuthenticated  } = useAuth();
 
   if ( !isAuthenticated ){
-    
+
   return <Redirect href='/(auth)/login'/>
 
-  } 
-
-  
+  }
 
 
     return (
-      <ChatProvider>
       <Tabs
         screenOptions={{
           headerShown: false,
           tabBarActiveTintColor: cl.maroon.dark_95,
           tabBarInactiveTintColor:cl.maroon.standard_seventy,
           tabBarShowLabel:false,
-          
+
         }}>
         <Tabs.Screen
           name="index"
@@ -49,22 +38,6 @@ export default function TabLayout() {
             ),
           }}
         />
-        
-          <Tabs.Screen
-            name="chats"
-            options={{
-              title: 'Chats',
-              tabBarIcon: ({ color }) => <TabBarIcons icon={'chats'} fill={color} />,
-            }}
-          />
-        
-        <Tabs.Screen
-          name="profile"
-          options={{
-            title: 'Profile',
-            tabBarIcon: ({ color }) => <TabBarIcons icon={'profile'} fill={color} />,
-          }}
-        />
         <Tabs.Screen
           name="events"
           options={{
@@ -73,19 +46,20 @@ export default function TabLayout() {
           }}
         />
         <Tabs.Screen
-          name="settings"
+          name="chats"
           options={{
-            title: 'Settings',
-            tabBarIcon: ({ color }) => <TabBarIcons icon={'settings'} fill={color} />,
+            title: 'Chats',
+            tabBarIcon: ({ color }) => <TabBarIcons icon={'chats'} fill={color} />,
+          }}
+        />
+        <Tabs.Screen
+          name="profile"
+          options={{
+            title: 'Profile',
+            tabBarIcon: ({ color }) => <TabBarIcons icon={'profile'} fill={color} />,
           }}
         />
       </Tabs>
-
-      
-       
-      
-      </ChatProvider>
-      
     );
-  
+
 }

@@ -79,12 +79,9 @@ export const  debounce = function(callback, wait) {
 
 
 export const randomImage = (imgArray) => {
-  
   const arrayLength = imgArray.length
-  returnImage = imgArray[Math.floor(Math.random() * arrayLength)];
-  
+  const returnImage = imgArray[Math.floor(Math.random() * arrayLength)];
   return returnImage
-
 }
 
 

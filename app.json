@@ -1,9 +1,9 @@
 {
   "expo": {
-    "name": "adventuresapp",
-    "slug": "adventuresapp",
+    "name": "FOMO",
+    "slug": "fomo",
     "version": "1.0.0",
-    "scheme": "adventuresapp",
+    "scheme": "fomo",
     //"entryPoint": "",
     "web": {
       "bundler": "metro",

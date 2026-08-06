@@ -14,23 +14,14 @@ const client = StreamChat.getInstance(process.env.EXPO_PUBLIC_STREAM_API_KEY);
 export default function ChatProvider({children}: PropsWithChildren) {
 
     const [isReady, setIsReady] = useState(false)
-    const { profile } = useAuth();
-
-    
-    
+    const { profile, isAuthenticated } = useAuth();
 
     useEffect(()=>{
         if (!profile) {
             return;
         }
-        
+
         const connect = async () => {
-
-         
-
-
-
-            
           await client.connectUser(
             {
               id: profile.id,
@@ -40,12 +31,6 @@ export default function ChatProvider({children}: PropsWithChildren) {
             tokenProvider
           );
           setIsReady(true)
-          console.log(profile)
-          
-          /*const channel = client.channel('messaging', 'the_park', {
-            name: 'The Park',
-          });
-          await channel.create();*/
         }
         connect();
         return() => {
@@ -56,6 +41,11 @@ export default function ChatProvider({children}: PropsWithChildren) {
         };
       },[profile?.id])
 
+      // Not logged in yet -- (auth) screens don't need chat, render them directly rather
+      // than blocking on a connection that will never happen without a profile.
+      if (!isAuthenticated) {
+        return <>{children}</>
+      }
 
       if (!isReady) {
         return(

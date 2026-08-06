@@ -2,11 +2,9 @@ import { View, TextInput, TouchableOpacity, Modal, Animated } from "react-native
 import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
 
 
-import { useEventsStore } from "../../src/store/useStore";
+import { useStore } from '@store'
 
-
-import { mainStyles } from '@src/theme/Styles';
-import { bS } from '@theme/Styles'
+import { mainStyles, bS } from '@theme/Styles'
 import cl from '@theme/Colours'
 import l from '@theme/Layout'
 
@@ -17,6 +15,7 @@ import { Calendar, toDateId, CalendarTheme, useDateRange } from "@marceloterreir
 
 import { PageHeader } from '@components/pageGeneral/pageHeader'
 import { Text } from '@src/components/Text';
+import { SquareButton } from '@components/Buttons';
 import { useState } from "react";
 
 const linearAccent = "#585ABF";
@@ -80,33 +79,26 @@ const linearTheme = {
 
 
 export default function CalendarPage() {
-    const globalLocation = useEventsStore((state) => state.location)
-    const setGlobalLocation = useEventsStore((state) => state.setLocation)
-    const resetGlobalLocation = useEventsStore((state) => state.resetLocation)
-
-
-
-    console.log(globalLocation)
-    
+    const setGlobalDateRange = useStore((state) => state.setDateRange)
 
     const today = toDateId(new Date());
-
-    const [selectedDate, setSelectedDate] = useState(today);
-
 
     const {
         calendarActiveDateRanges,
         onCalendarDayPress,
         dateRange,
-
     } = useDateRange();
-    
 
+    const onConfirm = () => {
+        if (!dateRange.startId) return
+        setGlobalDateRange(dateRange)
+        router.navigate('../')
+    }
 
     return(
 
         <View style={[mainStyles.page, {height:l.screen.height, width:l.screen.width }]}>
-            
+
 
             <View style={{paddingBottom:l.spacing.l,}} >
                     <PageHeader fontSize={bS.h3} label={'Choose Dates'} back={true} onBackPress={()=>{router.navigate('../')}}/>
@@ -122,13 +114,17 @@ export default function CalendarPage() {
                     backgroundColor:cl.maroon.dark_95,
 
                 }}>
-                
+
                     <Calendar
                         calendarMonthId={today}
                         calendarActiveDateRanges={calendarActiveDateRanges}
                         onCalendarDayPress={onCalendarDayPress}
                         theme={linearTheme}
                     />
+                </View>
+
+                <View style={{paddingTop:l.spacing.l, alignItems:'center'}}>
+                    <SquareButton label={'Confirm'} fill={true} size={'medium'} onPress={onConfirm}/>
                 </View>
 
         </View>

@@ -19,7 +19,8 @@ function SquareButton( props ) {
     
     
     
-    const onPressHandler = () => props.onPress();
+    
+    const onPressHandler = () => (props.onPress ? props.onPress() : console.log('button pressed'));
     
     
 
@@ -30,7 +31,8 @@ function SquareButton( props ) {
     let textPadding = l.sizeFromHeight(1)
     let color = {}
     let outlineColor = {}
-    
+    let alignment
+
     if ( fullsize == true ) {
         alignment = { alignSelf:'stretch'}
       } else {

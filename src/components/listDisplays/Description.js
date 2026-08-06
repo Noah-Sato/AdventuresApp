@@ -53,7 +53,7 @@ const styles = StyleSheet.create({
 
 
     first_title: {
-      fontFamily: 'Clearface', 
+      fontFamily: 'tenor-sans',
       fontStyle: 'normal',
       fontSize: l.sizeFromHeight(21,true,1.3),
       lineHeight: l.sizeFromHeight(26,true,1.3),

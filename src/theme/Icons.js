@@ -6,6 +6,7 @@ import Chats from '@assets/tabBarIcons/chats_24px.svg'
 import Profile from '@assets/tabBarIcons/contact_mail_24px.svg'
 import Events from '@assets/tabBarIcons/whatshot_24px.svg'
 import Settings from '@assets/tabBarIcons/settings_24px.svg'
+import Friends from '@assets/profileIcons/person_24px.svg'
 
 //Social Icons
 import Facebook from "@assets/Social/Ico_Facebook_24.svg"
@@ -46,6 +47,12 @@ const tabBarIcons = {
     },
     settings: {
         component: Settings,
+        size:24,
+    },
+    friends: {
+        // TODO: no dedicated multi-person/friends icon asset exists yet -- reusing the
+        // single-person icon as a placeholder until a proper one is added.
+        component: Friends,
         size:24,
     }
 };

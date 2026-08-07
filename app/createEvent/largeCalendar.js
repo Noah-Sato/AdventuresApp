@@ -16,11 +16,13 @@ import { Calendar, toDateId, CalendarTheme, useDateRange } from "@marceloterreir
 import { PageHeader } from '@components/pageGeneral/pageHeader'
 import { Text } from '@src/components/Text';
 import { SquareButton } from '@components/Buttons';
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
-const linearAccent = "#585ABF";
+const linearAccent = cl.basic.white;
 
-const linearTheme = {
+// `hasRangeEnd` is false until a second date is picked, so a lone selected
+// day (isStartOfRange but no endId yet) still needs its trailing corners rounded.
+const getLinearTheme = (hasRangeEnd) => ({
   rowMonth: {
     content: {
       textAlign: "left",
@@ -45,7 +47,7 @@ const linearTheme = {
     idle: ({ isPressed, isWeekend }) => ({
       container: {
         backgroundColor: isPressed ? linearAccent : "transparent",
-        borderRadius: 4,
+        borderRadius: 8,
       },
       content: {
         color: isWeekend && !isPressed ? "rgba(255, 255, 255, 0.5)" : "#ffffff",
@@ -54,27 +56,39 @@ const linearTheme = {
     today: ({ isPressed }) => ({
       container: {
         borderColor: "rgba(255, 255, 255, 0.5)",
-        borderRadius: isPressed ? 4 : 30,
+        borderRadius: isPressed ? 8 : 30,
         backgroundColor: isPressed ? linearAccent : "transparent",
       },
       content: {
-        color: isPressed ? "#ffffff" : "rgba(255, 255, 255, 0.5)",
+        color: cl.basic.white,
       },
     }),
-    active: ({ isEndOfRange, isStartOfRange }) => ({
+    disabled: () => ({
       container: {
-        backgroundColor: linearAccent,
-        borderTopLeftRadius: isStartOfRange ? 4 : 0,
-        borderBottomLeftRadius: isStartOfRange ? 4 : 0,
-        borderTopRightRadius: isEndOfRange ? 4 : 0,
-        borderBottomRightRadius: isEndOfRange ? 4 : 0,
+        backgroundColor: "transparent",
       },
       content: {
-        color: "#ffffff",
+        color: "rgba(255, 255, 255, 0.2)",
       },
     }),
+    active: ({ isEndOfRange, isStartOfRange, isPressed }) => {
+      const isSingleDay = isStartOfRange && !hasRangeEnd;
+      return {
+        container: {
+          backgroundColor: cl.basic.white,
+          borderTopLeftRadius: isStartOfRange ? 8 : 0,
+          borderBottomLeftRadius: isStartOfRange ? 8 : 0,
+          borderTopRightRadius: isEndOfRange || isSingleDay ? 8 : 0,
+          borderBottomRightRadius: isEndOfRange || isSingleDay ? 8 : 0,
+          
+        },
+        content: {
+          color: cl.maroon.ninty,
+        },
+      };
+    },
   },
-};   
+});
 
 
 
@@ -88,6 +102,11 @@ export default function CalendarPage() {
         onCalendarDayPress,
         dateRange,
     } = useDateRange();
+
+    const linearTheme = useMemo(
+        () => getLinearTheme(!!dateRange.endId),
+        [dateRange.endId]
+    );
 
     const onConfirm = () => {
         if (!dateRange.startId) return
@@ -117,6 +136,7 @@ export default function CalendarPage() {
 
                     <Calendar
                         calendarMonthId={today}
+                        calendarMinDateId={today}
                         calendarActiveDateRanges={calendarActiveDateRanges}
                         onCalendarDayPress={onCalendarDayPress}
                         theme={linearTheme}

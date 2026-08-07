@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from "react";
-import { View, ScrollView, TouchableOpacity, Modal, TextInput } from "react-native";
+import { View, ScrollView, TouchableOpacity, Modal, TextInput, StyleSheet } from "react-native";
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import { router, useFocusEffect } from "expo-router";
 import * as Location from 'expo-location';
@@ -9,6 +9,7 @@ import { mainStyles, bS } from '@theme/Styles'
 import cl from '@theme/Colours'
 import l from '@theme/Layout'
 
+
 import { PageHeader } from '@components/pageGeneral/pageHeader'
 import { Text } from '@components/Text';
 import { SquareButton } from '@components/Buttons';
@@ -17,6 +18,8 @@ import { useStore } from '@store'
 import { useCreateEvent } from '@hooks/useEvents'
 import FriendsBottomSheet from '@components/FriendsBottomSheet'
 
+import LocationBottomSheet from "@components/LocationBottomSheet";
+
 import Edit from '@assets/ButtonIcons/border_color_24px_outlined.svg'
 
 // Calendar selection is date-only (no time-of-day picker built yet) -- events default to
@@ -24,6 +27,9 @@ import Edit from '@assets/ButtonIcons/border_color_24px_outlined.svg'
 const DEFAULT_TIME = 'T12:00:00'
 
 const API_KEY = process.env.EXPO_PUBLIC_GOOGLE_API_KEY
+
+
+
 
 function formatDateRangeLabel(dateRange) {
     if (!dateRange?.startId) return null
@@ -49,7 +55,6 @@ export default function CreateEventPage() {
     const [title, setTitle] = useState('')
     const [description, setDescription] = useState('')
     const [visibility, setVisibility] = useState('private')
-    const [capacity, setCapacity] = useState('')
     const [submitting, setSubmitting] = useState(false)
     const [submitError, setSubmitError] = useState(null)
     const [guests, setGuests] = useState([])
@@ -62,6 +67,7 @@ export default function CreateEventPage() {
     const closeDateModal = () => setDateModalShow(false)
 
     const guestsSheetRef = useRef(null)
+    const locationSheetRef = useRef(null)
 
     useEffect(() => {
         async function getCurrentLocation() {
@@ -99,7 +105,6 @@ export default function CreateEventPage() {
             title: title.trim(),
             description: description.trim() || null,
             visibility,
-            capacity: capacity ? parseInt(capacity, 10) : null,
             start_date: `${globalDateRange.startId}${DEFAULT_TIME}`,
             end_date: globalDateRange.endId ? `${globalDateRange.endId}${DEFAULT_TIME}` : null,
             place_id: eventLocation.place_id,
@@ -112,6 +117,7 @@ export default function CreateEventPage() {
 
         if (error) {
             setSubmitError(error.message)
+            console.log(error.message)
             return
         }
 
@@ -164,11 +170,62 @@ export default function CreateEventPage() {
 
     const InviteFriends = () => (
         <View>
-          <SquareButton label={'Invite Friends'} fill={true} size={'medium'} onPress={()=>{
+          <SquareButton label={'Invite Friends'} fill={true} size={'large'} onPress={()=>{
             guestsSheetRef.current?.expand()
           }} />
         </View>
     )
+
+    const SelectLocation = () => {
+        const LocationButton = ( props ) => {
+
+            const onPressHandler = () => (props.onPress ? props.onPress() : console.log('button pressed'));
+            const label = props.label ? props.label : 'PlaceHolder'
+
+            return(
+                <TouchableOpacity onPress={onPressHandler} >
+                    <View style={[{
+                        alignSelf:'stretch',
+                        paddingHorizontal: l.buttonSpacing.xlarge,
+                        paddingVertical: l.buttonSpacing.large,
+                        backgroundColor: cl.maroon.dark_95,
+                        borderColor: cl.basic.white,
+                        alignItems:'center',
+                        justifyContent: 'flex-start', 
+                        alignContent: 'center',
+                        flexDirection:'row',
+                        gap:l.spacing.xs2,
+                        borderWidth: 2, 
+                        borderRadius:l.spacing.xs,
+                        gap:l.spacing.l
+                        
+                        
+                        
+                        
+                        }]}>
+                            <Edit width={l.spacing.m} height={l.spacing.m} fill={cl.red.light_thirty} />
+                            <Text style={[bS.body2,, {color:cl.grey.eighty, paddingTop: l.sizeFromHeight(3)}]}>{label}</Text>
+                            
+                        
+                        
+                    </View>
+            </TouchableOpacity>
+            )
+
+        }    
+
+
+        
+        return(
+            <View style={{gap:l.spacing.xs}}>
+                <Text style={[bS.body2, { color: cl.basic.white }]}>{'Where are you going?'} </Text>
+               <LocationButton  label={'Where are you going?'} onPress={()=>{
+                    locationSheetRef.current?.expand()
+                }}/>
+            </View>
+
+         )
+    }
 
 
 
@@ -245,6 +302,8 @@ export default function CreateEventPage() {
         )
     }
 
+
+    
     const textInputStyle = {
         borderWidth: l.spacing.xs3,
         paddingHorizontal: l.spacing.s,
@@ -256,13 +315,13 @@ export default function CreateEventPage() {
     }
 
     return (
-        <View style={[mainStyles.page, { height: l.screen.height + 60, width: l.screen.width }]}>
-            <ScrollView style={{ marginHorizontal: l.margins.page, gap: l.spacing.l, height: l.screen.height, width: l.screen.width - l.margins.page * 2 }}>
+        <View style={[mainStyles.page, { width: l.screen.width, paddingBottom: l.spacing.l}]}>
+            <ScrollView style={{ marginHorizontal: l.margins.page, gap: l.spacing.l * 2, width: l.screen.width - l.margins.page * 2 }}>
                 <View style={{ paddingBottom: l.spacing.xs }}>
                     <PageHeader fontSize={bS.h3} label={'Plan An Adventure'} close={true} onClosePress={() => { router.navigate('../') }} />
                 </View>
 
-                <View style={{ alignSelf: 'stretch', gap: l.spacing.xs }}>
+                <View style={styles.entryFields}>
                     <Text style={[bS.body2, { color: cl.basic.white }]}>{'Title'} </Text>
                     <TextInput
                         value={title}
@@ -273,7 +332,7 @@ export default function CreateEventPage() {
                     />
                 </View>
 
-                <View style={{ alignSelf: 'stretch', gap: l.spacing.xs }}>
+                <View style={styles.entryFields}>
                     <Text style={[bS.body2, { color: cl.basic.white }]}>{'Description'} </Text>
                     <TextInput
                         value={description}
@@ -285,49 +344,35 @@ export default function CreateEventPage() {
                     />
                 </View>
 
-                <View style={{ alignSelf: 'stretch', gap: l.spacing.xs }}>
-                    <Text style={[bS.body2, { color: cl.basic.white }]}>{'Where are you going?'} </Text>
-                    <View style={{
-                        borderWidth: l.spacing.xs3,
-                        paddingHorizontal: l.spacing.s,
-                        paddingVertical: l.spacing.s,
-                        borderRadius: l.spacing.xs,
-                        borderColor: cl.basic.white,
-                        color: cl.basic.white,
-                        alignSelf: 'stretch',
-                        flexDirection: 'row',
-                        justifyContent: 'flex-start',
-                        gap: l.spacing.xs,
-                    }}>
-                        <View style={{ paddingTop: l.spacing.xs - l.spacing.xs3 }}>
-                            <MiscIcons icon={'search'} fill={cl.red.light_thirty} />
-                        </View>
-                        <LocationSelector />
-                        <View style={{ height: l.spacing.m }} />
-                    </View>
+                <View style={styles.entryFields}>
+                     <SelectLocation />
                 </View>
+               
 
-                <TouchableOpacity style={{ alignSelf: 'stretch', gap: l.spacing.xs }} onPress={() => { openDateModal() }}>
+                <TouchableOpacity style={styles.entryFields} onPress={() => { openDateModal() }}>
                     <Text style={[bS.body2, { color: cl.basic.white }]}>{'When are you going?'} </Text>
                     <View style={{
                         flexDirection: 'row',
-                        justifyContent: 'space-between',
+                        justifyContent: 'flex-start',
                         borderWidth: l.spacing.xs3,
                         paddingHorizontal: l.spacing.s,
                         paddingVertical: l.spacing.s,
                         borderRadius: l.spacing.xs,
                         borderColor: cl.basic.white,
                         color: cl.basic.white,
+                        gap:l.spacing.l
                     }}>
+                        <Edit width={l.spacing.m} height={l.spacing.m} fill={cl.red.light_thirty} />
                         <Text style={[bS.body2, { color: globalDateRange?.startId ? cl.basic.white : cl.grey.eighty }]}>
                             {formatDateRangeLabel(globalDateRange) ?? 'When are you going?'}
                         </Text>
-                        <Edit width={l.spacing.m} height={l.spacing.m} fill={cl.red.light_thirty} />
+                        
                     </View>
                 </TouchableOpacity>
                 <DateModal />
 
-                <View style={{ alignSelf: 'stretch', gap: l.spacing.xs }}>
+                <View style={{gap:l.spacing.s}}>
+                <View style={styles.entryFields}>
                     <Text style={[bS.body2, { color: cl.basic.white }]}>{'Who can see this?'} </Text>
                     <View style={{ flexDirection: 'row', gap: l.spacing.xs }}>
                         <SquareButton
@@ -345,18 +390,12 @@ export default function CreateEventPage() {
                     </View>
                 </View>
 
-                <InviteFriends />
+                
 
-                <View style={{ alignSelf: 'stretch', gap: l.spacing.xs }}>
-                    <Text style={[bS.body2, { color: cl.basic.white }]}>{'Capacity'} </Text>
-                    <TextInput
-                        value={capacity}
-                        onChangeText={setCapacity}
-                        placeholder={'Optional'}
-                        placeholderTextColor={cl.grey.eighty}
-                        keyboardType={'number-pad'}
-                        style={textInputStyle}
-                    />
+                <InviteFriends />
+              
+                
+
                 </View>
 
                 {submitError && (
@@ -374,7 +413,19 @@ export default function CreateEventPage() {
                 </View>
             </ScrollView>
 
+            <LocationBottomSheet ref={locationSheetRef} selectedLocation={eventLocation} onDone={setEventLocation}/>
             <FriendsBottomSheet ref={guestsSheetRef} selectedIds={guests} onDone={setGuests} />
         </View>
     )
 }
+
+
+const styles = StyleSheet.create({
+
+    entryFields: {
+        alignSelf: 'stretch', 
+        gap: l.spacing.xs,
+        paddingTop:l.spacing.l 
+    }
+
+})

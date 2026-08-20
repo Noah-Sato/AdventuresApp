@@ -20,8 +20,11 @@ module.exports = function (api) {
                 "@contexts": "./contexts",
                 "@types":"./types"
             },
-        },
-    ],
+        }],
+    ["module:react-native-dotenv", {
+      moduleName: '@env',
+      path: './.env'
+    }],
     'react-native-reanimated/plugin',
     ],
   };

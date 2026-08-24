@@ -45,22 +45,23 @@ export default function ChannelScreen() {
     }
 
     return(
-    <View style={[{backgroundColor:cl.maroon.dark_95, paddingBottom:insets.bottom, height:l.screen.height/1.15}]}>
-        <View style={{paddingBottom:l.spacing.s}}>
-        <PageHeader back={true} label={'chat header '} onBackPress={()=>{router.navigate('../')}}/>
+    
+        <View style={[{flex: 1, backgroundColor:cl.maroon.dark_95, paddingBottom:insets.bottom,}]}>
+            <View style={{paddingBottom:l.spacing.s}}>
+                <PageHeader back={true} label={'chat header '} onBackPress={()=>{router.navigate('../')}}/>
+            </View>
+
+            {event &&
+                <View style={{alignItems:'center', paddingBottom:l.spacing.s}}>
+                    <SquareButton size={'small'} label={'Photos'} onPress={()=>router.push(`/event/${event.id}/photos`)}/>
+                </View>}
+
+                <Channel channel={channel} additionalKeyboardAvoidingViewProps={{ style: { flex: 1 } }}>
+                    <MessageList/>
+                    <MessageInput/>
+                </Channel>
+
         </View>
-
-        {event &&
-            <View style={{alignItems:'center', paddingBottom:l.spacing.s}}>
-                <SquareButton size={'small'} label={'Photos'} onPress={()=>router.push(`/event/${event.id}/photos`)}/>
-            </View>}
-
-            <Channel channel={channel}>
-                <MessageList/>
-                <MessageInput/>
-            </Channel>
-
-    </View>
     )
 
 }

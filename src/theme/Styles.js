@@ -5,6 +5,7 @@ import Layout from '../theme/Layout'
 
 
 
+
 export const mainStyles = StyleSheet.create({
     
     page:{

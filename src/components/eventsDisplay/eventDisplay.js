@@ -69,11 +69,13 @@ function EventsDisplay(props) {
     const fetchAttendees = async () => {
 
         const fetchAttendeeImages = async (path) => {
+            if (!path) return null
+
             const {data, error} = await supabase.storage.from('avatars').getPublicUrl(path);
 
             console.log(data.publicUrl, 'data')
 
-            
+
             const returnImage = data.publicUrl
 
             return(returnImage)
@@ -100,9 +102,9 @@ function EventsDisplay(props) {
 
     const fetchUserImage = async ({userID}) => {
         const {data: data, error}= await supabase.from('profiles').select('avatar_url').eq('id',userID).single()
-        if (data !== null){
+        if (data !== null && data.avatar_url){
             const {data:storageData, error} = await supabase.storage.from('avatars').getPublicUrl(data.avatar_url)
-            
+
             setUserImage(storageData.publicUrl)
         }
     }

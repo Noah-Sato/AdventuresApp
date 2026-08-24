@@ -130,7 +130,7 @@ const FriendsBottomSheet = forwardRef(function FriendsBottomSheet({ selectedIds 
 
     
     return (
-        <BottomSheet ref={ref} index={-1} snapPoints={[sheetHeight]} enablePanDownToClose>
+        <BottomSheet ref={ref} index={-1} snapPoints={[sheetHeight]} enablePanDownToClose enableDynamicSizing={false}>
             <View
                 style={styles.header}
                 onLayout={(e) => setHeaderHeight(e.nativeEvent.layout.height)}

@@ -1,9 +1,8 @@
 import { useRef, forwardRef, useCallback, useEffect, useState } from "react";
 import { View, TouchableOpacity, StyleSheet, useWindowDimensions } from "react-native";
-import BottomSheet, { BottomSheetFlatList } from "@gorhom/bottom-sheet";
+import BottomSheet from "@gorhom/bottom-sheet";
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import * as Location from 'expo-location';
-
 
 import cl from '@theme/Colours'
 import l from '@theme/Layout'
@@ -12,9 +11,11 @@ import { mainStyles, bS } from '@theme/Styles'
 import { Text } from '@components/Text';
 import { SquareButton } from '@components/Buttons';
 import { UserIcon } from '@components/userIcons';
-import { MiscIcons } from '@theme/Icons'
+import { MiscIcons } from '@theme/Icons';
 
-export default LocationBottomSheet = forwardRef(function LocationBottomSheet({ locationSelected="", onDone}, ref) {
+
+
+const LocationBottomSheet = forwardRef(function LocationBottomSheet({ locationSelected="", onDone}, ref) {
 
     const [selected, setSelected] = useState(locationSelected);
     const [myLat, setMyLat] = useState(null);
@@ -23,25 +24,17 @@ export default LocationBottomSheet = forwardRef(function LocationBottomSheet({ l
 
     
     const {height: windowHeight} = useWindowDimensions();
-    const maxSheetHeight = windowHeight * 0.5
-
-
-    
-
-   
-
+    const maxSheetHeight = windowHeight * 0.85
 
     useEffect(()=> {
-        async function getCurrentLocation() { 
+        async function getCurrentLocation() {
             let { status } = await Location.requestForegroundPermissionsAsync();
             if (status !== 'granted') {
                 return;
             }
             let location = await Location.getCurrentPositionAsync({});
             setMyLat(location.coords.latitude)
-            
             setMyLong(location.coords.longitude)
-            
         }
         getCurrentLocation();
     }, []);
@@ -112,7 +105,7 @@ export default LocationBottomSheet = forwardRef(function LocationBottomSheet({ l
                     </View>
                 )}
                 styles={{
-                    container: { width:'85%', alignItems:'center'},
+                    container: { width:'90%', alignItems:'center'},
                     listView: {  },
                     separator: { backgroundColor: cl.basic.white },
                     row: { backgroundColor: cl.basic.white,  },
@@ -139,33 +132,32 @@ export default LocationBottomSheet = forwardRef(function LocationBottomSheet({ l
 
 
     return (
-        <BottomSheet 
-        ref={ref} 
-        index={-1} 
-        snapPoints={[maxSheetHeight]} 
+        <BottomSheet
+        ref={ref}
+        index={-1}
+        snapPoints={[maxSheetHeight]}
         enablePanDownToClose
+        enableDynamicSizing={false}
         onChange={(index) => {
-            if(index >=0) placesRef.current?.setAddressText(selected?.name ?? "") 
-        }} 
-        style={[{
-            alignContent:'center',
-            justifyContent:'center',
-            alignItems:'center'
-        }]}>
+            if(index >=0) placesRef.current?.setAddressText(selected?.name ?? "")
+        }}>
+            <View style={[mainStyles.page,
+            {
             
-            <View style={[mainStyles.page, 
-            { 
             width: l.screen.width,
-            marginHorizontal:l.margins.page,
+            //marginHorizontal:l.margins.page,
             backgroundColor:cl.basic.white,
             alignContent:'center',
             justifyContent:'center',
-            alignItems:'center' 
+            alignItems:'center'
             }]}>
                 <View style={styles.header}>
-
-                    <Text style={[bS.h5, { color: cl.maroon.ninty }]}>{'Where are you going?'}</Text>
-                
+                    <Text style={[bS.h5, 
+                        {width:'auto', 
+                        //backgroundColor:'red',
+                        color: cl.maroon.ninty,
+                        alignSelf:'center' 
+                        }]}>{'Where are you going?'}</Text>
                 </View>
 
                 <GooglePlacesInput/>
@@ -173,6 +165,8 @@ export default LocationBottomSheet = forwardRef(function LocationBottomSheet({ l
         </BottomSheet>
     )
 })
+
+export default LocationBottomSheet
 
 const styles = StyleSheet.create({
     header: {

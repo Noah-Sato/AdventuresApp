@@ -1,15 +1,16 @@
 import { View, TextInput, TouchableOpacity, Modal, Animated } from "react-native";
 import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
-
+import DateTimePicker from "@react-native-community/datetimepicker";
+import { Calendar, toDateId, CalendarTheme, useDateRange, } from "@marceloterreiro/flash-calendar";
 
 import { useStore } from '@store'
 
 import { mainStyles, bS } from '@theme/Styles'
 import cl from '@theme/Colours'
 import l from '@theme/Layout'
+import { SafeAreaProvider, useSafeAreaInsets } from "react-native-safe-area-context";
 
 
-import { Calendar, toDateId, CalendarTheme, useDateRange } from "@marceloterreiro/flash-calendar";
 
 
 
@@ -96,6 +97,12 @@ export default function CalendarPage() {
     const setGlobalDateRange = useStore((state) => state.setDateRange)
 
     const today = toDateId(new Date());
+    const oneYearFromToday = toDateId(new Date(new Date().setFullYear(new Date().getFullYear() + 1)));
+    const setGlobalStartTime = useStore((state) => state.setStartTime)
+    const setGlobalEndTime = useStore((state) => state.setEndTime)
+    const [startTime, setStartTime] = useState(() => {const d = new Date(); d.setHours(12, 0, 0, 0); return d })
+    const [endTime, setEndTime] = useState(() => {const d = new Date(); d.setHours(23, 59, 0, 0); return d})
+
 
     const {
         calendarActiveDateRanges,
@@ -111,43 +118,71 @@ export default function CalendarPage() {
     const onConfirm = () => {
         if (!dateRange.startId) return
         setGlobalDateRange(dateRange)
+        setGlobalStartTime(startTime)
+        setGlobalEndTime(endTime)
         router.navigate('../')
     }
 
+  const insets = useSafeAreaInsets();
+  
+
     return(
-
-        <View style={[mainStyles.page, {height:l.screen.height, width:l.screen.width }]}>
-
-
-            <View style={{paddingBottom:l.spacing.l,}} >
-                    <PageHeader fontSize={bS.h3} label={'Choose Dates'} back={true} onBackPress={()=>{router.navigate('../')}}/>
-                </View>
+        <SafeAreaProvider>
+          <View style={[mainStyles.page, {height:l.screen.height, width:l.screen.width, paddingBottom: insets.bottom }]}>
 
 
-                <View style={{
-                    borderWidth:l.spacing.xs3,
-                    paddingHorizontal:l.spacing.s,
-                    paddingVertical:l.spacing.l,
-                    borderRadius:l.spacing.xs,
-                    borderColor:cl.basic.white,
-                    backgroundColor:cl.maroon.dark_95,
+              <View style={{paddingBottom:l.spacing.l,}} >
+                      <PageHeader fontSize={bS.h3} label={'Choose Dates'} back={true} onBackPress={()=>{router.navigate('../')}}/>
+                  </View>
 
-                }}>
 
-                    <Calendar
-                        calendarMonthId={today}
-                        calendarMinDateId={today}
-                        calendarActiveDateRanges={calendarActiveDateRanges}
-                        onCalendarDayPress={onCalendarDayPress}
-                        theme={linearTheme}
-                    />
-                </View>
+                  <View style={{
+                      borderWidth:l.spacing.xs3,
+                      paddingHorizontal:l.spacing.s,
+                      paddingVertical:l.spacing.l,
+                      borderRadius:l.spacing.xs,
+                      borderColor:cl.basic.white,
+                      backgroundColor:cl.maroon.dark_95,
+                      gap:l.spacing.l,
+                      flex:1
 
-                <View style={{paddingTop:l.spacing.l, alignItems:'center'}}>
-                    <SquareButton label={'Confirm'} fill={true} size={'medium'} onPress={onConfirm}/>
-                </View>
+                  }}>
 
-        </View>
+                      
+                        <Calendar.List
+                            calendarMinDateId={today}
+                            calendarMaxDateId={oneYearFromToday}
+                            calendarActiveDateRanges={calendarActiveDateRanges}
+                            onCalendarDayPress={onCalendarDayPress}
+                            theme={linearTheme}
+                        /> 
+                      
+                      <View>
+                        
+                        <View style={[{flexDirection:'row', alignItems:'center', justifyContent:'space-between'}]}>
+                          <Text style={[bS.h6, { color: cl.basic.white }]}>{'Select Start Time:'} </Text>
+                          <DateTimePicker mode="time" display="inline" value={startTime} onChange={(_, d) => d && setStartTime(d)} themeVariant='dark'/>
+                        </View>
+
+                        <View style={[{flexDirection:'row', alignItems:'center', justifyContent:'space-between'}]}>
+                          <Text style={[bS.h6, { color: cl.basic.white }]}>{'Select End Time:'} </Text>
+                          <DateTimePicker mode="time" display="inline" value={endTime} onChange={(_, d) => d && setEndTime(d)} themeVariant='dark'/>
+                        </View>
+
+                      </View>
+
+
+                    </View>
+
+                
+
+                  <View style={{paddingTop:l.spacing.l, alignItems:'center'}}>
+                    
+                      <SquareButton label={'Confirm'} fill={true} size={'medium'} onPress={onConfirm}/>
+                  </View>
+
+          </View>
+        </SafeAreaProvider>
     )
 
 }

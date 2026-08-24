@@ -24,7 +24,7 @@ import Edit from '@assets/ButtonIcons/border_color_24px_outlined.svg'
 
 // Calendar selection is date-only (no time-of-day picker built yet) -- events default to
 // noon on the selected day. Revisit if events need precise start times.
-const DEFAULT_TIME = 'T12:00:00'
+const formatTimeSuffix = (date) => `T${format(date, 'HH:mm:ss')}`
 
 const API_KEY = process.env.EXPO_PUBLIC_GOOGLE_API_KEY
 
@@ -33,9 +33,9 @@ const API_KEY = process.env.EXPO_PUBLIC_GOOGLE_API_KEY
 
 function formatDateRangeLabel(dateRange) {
     if (!dateRange?.startId) return null
-    const start = format(parseISO(dateRange.startId), 'do MMM yyyy')
+    const start = `${format(parseISO(dateRange.startId), 'do MMM')}`
     if (dateRange.endId && dateRange.endId !== dateRange.startId) {
-        return `${start} - ${format(parseISO(dateRange.endId), 'do MMM yyyy')}`
+        return `${start} - ${format(parseISO(dateRange.endId), 'do MMM')}`
     }
     return start
 }
@@ -69,6 +69,13 @@ export default function CreateEventPage() {
     const guestsSheetRef = useRef(null)
     const locationSheetRef = useRef(null)
 
+
+    const startTime = useStore((state) => state.startTime)
+    const endTime = useStore((state) => state.endTime)
+    const resetTimes = useStore((state) => state.resetTimes)
+
+
+
     useEffect(() => {
         async function getCurrentLocation() {
             let { status } = await Location.requestForegroundPermissionsAsync();
@@ -83,8 +90,7 @@ export default function CreateEventPage() {
         getCurrentLocation();
     }, []);
 
-    useFocusEffect(
-        useCallback(() => {
+    useFocusEffect(useCallback(() => {
             if (globalLocation) {
                 setEventLocation(globalLocation)
                 setLocationSelected(true)
@@ -94,6 +100,8 @@ export default function CreateEventPage() {
         }, [globalLocation])
     );
 
+    
+
     const canSubmit = title.trim().length > 0 && locationSelected && !!globalDateRange?.startId
 
     const onSubmit = async () => {
@@ -101,12 +109,14 @@ export default function CreateEventPage() {
         setSubmitting(true)
         setSubmitError(null)
 
+        const endDateId = globalDateRange.endId || globalDateRange.startId
+
         const { data, error } = await createEvent({
             title: title.trim(),
             description: description.trim() || null,
             visibility,
-            start_date: `${globalDateRange.startId}${DEFAULT_TIME}`,
-            end_date: globalDateRange.endId ? `${globalDateRange.endId}${DEFAULT_TIME}` : null,
+            start_date: `${globalDateRange.startId}${formatTimeSuffix(startTime)}`,
+            end_date: `${endDateId}${formatTimeSuffix(endTime)}`,
             place_id: eventLocation.place_id,
             formatted_address: eventLocation.formatted_address,
             lat: eventLocation.lat,
@@ -123,6 +133,7 @@ export default function CreateEventPage() {
 
         resetGlobalLocation()
         resetGlobalDateRange()
+        resetTimes()
         // Cover/description photos are optional and skippable from here (the edit screen's
         // "Done" button goes to the event detail page, where inviting guests happens next).
         router.replace(`/event/${data.id}/edit`)
@@ -161,6 +172,8 @@ export default function CreateEventPage() {
                             closeDateModal()
                             router.navigate('/createEvent/largeCalendar')
                         }} />
+
+                        
                     </View>
                 </View>
             </View>
@@ -169,7 +182,7 @@ export default function CreateEventPage() {
 
 
     const InviteFriends = () => (
-        <View>
+        <View style={[styles.entryFields, {alignItems:'center', paddingBottom:l.spacing.l}]}>
           <SquareButton label={'Invite Friends'} fill={true} size={'large'} onPress={()=>{
             guestsSheetRef.current?.expand()
           }} />
@@ -180,13 +193,23 @@ export default function CreateEventPage() {
         const LocationButton = ( props ) => {
 
             const onPressHandler = () => (props.onPress ? props.onPress() : console.log('button pressed'));
-            const label = props.label ? props.label : 'PlaceHolder'
+            const label = props.label ? props.label : 'Where are you going?'
+            let textColor
+
+            if (props.label ) {
+
+                textColor = cl.basic.white
+            } else {
+
+                textColor = cl.grey.eighty
+            }
 
             return(
                 <TouchableOpacity onPress={onPressHandler} >
                     <View style={[{
                         alignSelf:'stretch',
                         paddingHorizontal: l.buttonSpacing.xlarge,
+                        paddingLeft:l.spacing.m,
                         paddingVertical: l.buttonSpacing.large,
                         backgroundColor: cl.maroon.dark_95,
                         borderColor: cl.basic.white,
@@ -197,14 +220,15 @@ export default function CreateEventPage() {
                         gap:l.spacing.xs2,
                         borderWidth: 2, 
                         borderRadius:l.spacing.xs,
-                        gap:l.spacing.l
+                        gap:l.spacing.l,
+                        
                         
                         
                         
                         
                         }]}>
                             <Edit width={l.spacing.m} height={l.spacing.m} fill={cl.red.light_thirty} />
-                            <Text style={[bS.body2,, {color:cl.grey.eighty, paddingTop: l.sizeFromHeight(3)}]}>{label}</Text>
+                            <Text numberOfLines={1} ellipsizeMode={'tail'} style={[bS.body2,, {width:'80%' ,color:textColor, paddingTop: l.sizeFromHeight(3)}]}>{label}</Text>
                             
                         
                         
@@ -219,7 +243,10 @@ export default function CreateEventPage() {
         return(
             <View style={{gap:l.spacing.xs}}>
                 <Text style={[bS.body2, { color: cl.basic.white }]}>{'Where are you going?'} </Text>
-               <LocationButton  label={'Where are you going?'} onPress={()=>{
+               <LocationButton  
+               label={eventLocation?.name ?? null} 
+
+               onPress={()=>{
                     locationSheetRef.current?.expand()
                 }}/>
             </View>
@@ -247,6 +274,23 @@ export default function CreateEventPage() {
             <ScrollView style={{ marginHorizontal: l.margins.page, gap: l.spacing.l * 2, width: l.screen.width - l.margins.page * 2 }}>
                 <View style={{ paddingBottom: l.spacing.xs }}>
                     <PageHeader fontSize={bS.h3} label={'Plan An Adventure'} close={true} onClosePress={() => { router.navigate('../') }} />
+                </View>
+                <View style={[styles.entryFields, {alignContent:'center', justifyContent:'center',alignItems:'center'}]}>
+                    <Text style={[bS.body2, { color: cl.basic.white }]}>{'Who can see this?'} </Text>
+                    <View style={{ flexDirection: 'row', gap: l.spacing.xs }}>
+                        <SquareButton
+                            label={'Private'}
+                            size={'small'}
+                            fill={visibility === 'private'}
+                            onPress={() => setVisibility('private')}
+                        />
+                        <SquareButton
+                            label={'Public'}
+                            size={'small'}
+                            fill={visibility === 'public'}
+                            onPress={() => setVisibility('public')}
+                        />
+                    </View>
                 </View>
 
                 <View style={styles.entryFields}>
@@ -288,11 +332,11 @@ export default function CreateEventPage() {
                         borderRadius: l.spacing.xs,
                         borderColor: cl.basic.white,
                         color: cl.basic.white,
-                        gap:l.spacing.l
+                        gap:l.spacing.xl
                     }}>
                         <Edit width={l.spacing.m} height={l.spacing.m} fill={cl.red.light_thirty} />
                         <Text style={[bS.body2, { color: globalDateRange?.startId ? cl.basic.white : cl.grey.eighty }]}>
-                            {formatDateRangeLabel(globalDateRange) ?? 'When are you going?'}
+                            {globalDateRange?.startId ? `${format(startTime, 'h:mm a')}, ${formatDateRangeLabel(globalDateRange)}` : 'When are you going?'}
                         </Text>
                         
                     </View>
@@ -300,23 +344,7 @@ export default function CreateEventPage() {
                 <DateModal />
 
                 <View style={{gap:l.spacing.s}}>
-                <View style={styles.entryFields}>
-                    <Text style={[bS.body2, { color: cl.basic.white }]}>{'Who can see this?'} </Text>
-                    <View style={{ flexDirection: 'row', gap: l.spacing.xs }}>
-                        <SquareButton
-                            label={'Private'}
-                            size={'small'}
-                            fill={visibility === 'private'}
-                            onPress={() => setVisibility('private')}
-                        />
-                        <SquareButton
-                            label={'Public'}
-                            size={'small'}
-                            fill={visibility === 'public'}
-                            onPress={() => setVisibility('public')}
-                        />
-                    </View>
-                </View>
+                
 
                 
 
@@ -341,7 +369,16 @@ export default function CreateEventPage() {
                 </View>
             </ScrollView>
 
-            <LocationBottomSheet ref={locationSheetRef} selectedLocation={eventLocation} onDone={setEventLocation}/>
+            <LocationBottomSheet 
+            ref={locationSheetRef} 
+            selectedLocation={eventLocation} 
+            onDone={(location)=>{
+                setEventLocation(location)
+                setLocationSelected(true)
+                setGlobalLocation(location)
+                console.log(location)
+                }}/>
+                
             <FriendsBottomSheet ref={guestsSheetRef} selectedIds={guests} onDone={setGuests} />
         </View>
     )

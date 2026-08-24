@@ -1,4 +1,4 @@
-import { forwardRef, useCallback, useEffect, useState } from "react";
+import { useRef, forwardRef, useCallback, useEffect, useState } from "react";
 import { View, TouchableOpacity, StyleSheet, useWindowDimensions } from "react-native";
 import BottomSheet, { BottomSheetFlatList } from "@gorhom/bottom-sheet";
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
@@ -7,7 +7,7 @@ import * as Location from 'expo-location';
 
 import cl from '@theme/Colours'
 import l from '@theme/Layout'
-import { bS } from '@theme/Styles'
+import { mainStyles, bS } from '@theme/Styles'
 
 import { Text } from '@components/Text';
 import { SquareButton } from '@components/Buttons';
@@ -19,33 +19,16 @@ export default LocationBottomSheet = forwardRef(function LocationBottomSheet({ l
     const [selected, setSelected] = useState(locationSelected);
     const [myLat, setMyLat] = useState(null);
     const [myLong, setMyLong] = useState(null); 
+    const placesRef = useRef(null);
 
     
     const {height: windowHeight} = useWindowDimensions();
-    const maxSheetHeight = windowHeight * 0.7
+    const maxSheetHeight = windowHeight * 0.5
 
 
     
 
-    /*
-    const handleDone = useCallback((profileId) => {
-        onDone?.(selected);
-        ref?.current?.close();
-        
-    }, [onDone, selected, ref]);
-    
-
-
-    const 
-
-    const LocationItem = ({data}) => {
-        return(
-            <View>
-
-            </View>
-        )
-    }
-    */
+   
 
 
     useEffect(()=> {
@@ -64,8 +47,26 @@ export default LocationBottomSheet = forwardRef(function LocationBottomSheet({ l
     }, []);
 
 
+    
+
+
     const GooglePlacesInput = () => (
             <GooglePlacesAutocomplete
+                ref={(placesRef)}
+                /*renderRightButton={() => (
+                    <TouchableOpacity 
+                    style={{
+                        justifyContent:'center'}}
+                    onPress={()=>{
+                        placesRef.current?.setAddressText('')
+                    }}>
+                    
+                        <View style={{backgroundColor: cl.maroon.sixty, borderRadius:999, padding: l.spacing.xs2}}>
+                            <MiscIcons icon={'close'} fill={cl.basic.white}/>
+                        </View>
+                    
+                    </TouchableOpacity>
+                )}*/
                 placeholder='Search'
                 placeholderTextColor={cl.red.light_thirty}
                 onPress={(data, details = null) => {
@@ -100,26 +101,29 @@ export default LocationBottomSheet = forwardRef(function LocationBottomSheet({ l
                         flex: 1,
                         width: '100%',
                         flexDirection: 'row',
-                        backgroundColor: cl.maroon.dark_95,
-                        gap: l.spacing.xs
+                        backgroundColor: cl.basic.white,
+                        gap: l.spacing.xs,
+                   
+                        
+                        //paddingHorizontal:l.spacing.l
                     }}>
-                        <MiscIcons icon={'map'} fill={cl.basic.white} />
-                        <Text numberOfLines={1} ellipsizeMode={'tail'} style={[bS.h7, { color: cl.basic.white, width: l.screen.width - (l.spacing.m * 7) }]}>{data.description}</Text>
+                        <MiscIcons icon={'map'} fill={cl.maroon.dark_95} />
+                        <Text numberOfLines={1} ellipsizeMode={'tail'} style={[bS.h7, { color: cl.maroon.dark_95, width: l.screen.width - (l.spacing.m * 7) }]}>{data.description}</Text>
                     </View>
                 )}
                 styles={{
-                    container: { width: '100%' },
-                    listView: { width: '100%' },
-                    separator: { backgroundColor: cl.maroon.dark_95 },
-                    row: { backgroundColor: cl.maroon.dark_95, width: '100%' },
-                    textInputContainer: { backgroundColor: cl.maroon.dark_95 },
+                    container: { width:'85%', alignItems:'center'},
+                    listView: {  },
+                    separator: { backgroundColor: cl.basic.white },
+                    row: { backgroundColor: cl.basic.white,  },
+                    textInputContainer: { backgroundColor: cl.basic.white, paddingVertical:l.spacing.xs2, paddingHorizontal:l.buttonSpacing.small, borderWidth: 2, borderRadius:l.spacing.xs, },
                     textInput: {
                         height: 38,
                         fontFamily: 'tenor-sans',
                         fontStyle: 'normal',
-                        color: cl.basic.white,
+                        color: cl.maroon.dark_95,
                         fontSize: 16,
-                        backgroundColor: cl.maroon.dark_95,
+                        backgroundColor: cl.basic.white,
                     },
                     predefinedPlacesDescription: { color: cl.grey.fourty },
                 }}
@@ -127,19 +131,7 @@ export default LocationBottomSheet = forwardRef(function LocationBottomSheet({ l
         );
 
 
-        const LocationSelector = () => {
-        if (!selected?.place_id) {
-            return <GooglePlacesInput />
-        }
-        return (
-            <TouchableOpacity style={{ paddingVertical: l.spacing.xs - l.spacing.xs3 }} onPress={() => {
-                setSelected(null)
-                //setEventLocation({})
-            }}>
-                <Text style={[bS.body1, { color: cl.basic.white }]}>{selected.name}</Text>
-            </TouchableOpacity>
-        )
-    }
+        
 
 
 
@@ -147,15 +139,37 @@ export default LocationBottomSheet = forwardRef(function LocationBottomSheet({ l
 
 
     return (
-        <BottomSheet ref={ref} index={-1} snapPoints={[maxSheetHeight]} enablePanDownToClose style={[{alignContent:'center',justifyContent:'center',alignItems:'center'}]}>
-            <View style={styles.header}>
-
-                 <Text style={[bS.h5, { color: cl.maroon.ninty }]}>{'Where are you going?'}</Text>
+        <BottomSheet 
+        ref={ref} 
+        index={-1} 
+        snapPoints={[maxSheetHeight]} 
+        enablePanDownToClose
+        onChange={(index) => {
+            if(index >=0) placesRef.current?.setAddressText(selected?.name ?? "") 
+        }} 
+        style={[{
+            alignContent:'center',
+            justifyContent:'center',
+            alignItems:'center'
+        }]}>
             
+            <View style={[mainStyles.page, 
+            { 
+            width: l.screen.width,
+            marginHorizontal:l.margins.page,
+            backgroundColor:cl.basic.white,
+            alignContent:'center',
+            justifyContent:'center',
+            alignItems:'center' 
+            }]}>
+                <View style={styles.header}>
+
+                    <Text style={[bS.h5, { color: cl.maroon.ninty }]}>{'Where are you going?'}</Text>
+                
+                </View>
+
+                <GooglePlacesInput/>
             </View>
-
-            <LocationSelector/>
-
         </BottomSheet>
     )
 })

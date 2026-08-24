@@ -56,7 +56,7 @@ export default function ChannelScreen() {
                     <SquareButton size={'small'} label={'Photos'} onPress={()=>router.push(`/event/${event.id}/photos`)}/>
                 </View>}
 
-                <Channel channel={channel} additionalKeyboardAvoidingViewProps={{ style: { flex: 1 } }}>
+                <Channel channel={channel} keyboardVerticalOffset={0} additionalKeyboardAvoidingViewProps={{ style: { flex: 1 } }}>
                     <MessageList/>
                     <MessageInput/>
                 </Channel>

@@ -14,7 +14,8 @@
     "plugins": [
       "expo-router",
       "expo-font",
-      
+      "expo-fmt-consteval-fix",
+
       [
         "expo-image-picker",
         {
@@ -46,14 +47,14 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.fomo.app"
+      "bundleIdentifier": "com.moaame.fomo"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.fomo.app"
+      "package": "com.moaame.fomo"
     }
   }
 }

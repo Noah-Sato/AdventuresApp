@@ -18,10 +18,20 @@ export default function ChatProvider({children}: PropsWithChildren) {
 
     useEffect(()=>{
         if (!profile) {
+            if (client.userID) {
+                client.disconnectUser();
+            }
+            setIsReady(false);
             return;
         }
 
+        let cancelled = false;
+        setIsReady(false);
+
         const connect = async () => {
+          if (client.userID) {
+            await client.disconnectUser();
+          }
           await client.connectUser(
             {
               id: profile.id,
@@ -30,14 +40,13 @@ export default function ChatProvider({children}: PropsWithChildren) {
             },
             tokenProvider
           );
-          setIsReady(true)
+          if (!cancelled) {
+            setIsReady(true)
+          }
         }
         connect();
         return() => {
-            if (isReady){
-            client.disconnectUser();
-            }
-            setIsReady(false);
+            cancelled = true;
         };
       },[profile?.id])
 

@@ -4,6 +4,7 @@
     "slug": "fomo",
     "version": "1.0.0",
     "scheme": "fomo",
+    "newArchEnabled": false,
     //"entryPoint": "",
     "web": {
       "bundler": "metro",

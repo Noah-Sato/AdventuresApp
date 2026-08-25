@@ -6,6 +6,7 @@ import { View, TouchableOpacity,StyleSheet  } from 'react-native';
 import Close from '@assets/ButtonIcons/close_24px_outlined.svg'
 import Add from '@assets/MiscIcons/Add.svg'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import Back from '@assets/ButtonIcons/arrow_back_ios_24px_outlined.svg'
 
 
 

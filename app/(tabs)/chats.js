@@ -16,6 +16,7 @@ import cl from '@theme/Colours'
 import l from '@theme/Layout'
 import { router } from 'expo-router';
 import { useAuth } from "@contexts/AuthProvider.tsx";
+import { ChannelPreviewAvatar } from "@components/listDisplays/ChannelPreviewAvatar";
 
 
 
@@ -79,8 +80,9 @@ export default function Page() {
                 <PageHeader label={'chats'} onPress={()=>{router.navigate('/chatContainer/users')}}/>
             </View>
             <ChannelList
-                filters={{members: {$in: [user.id]}}} 
-                onSelect={(channel) => router.push(`/chatContainer/channel/${channel.cid}`)}/>
+                filters={{members: {$in: [user.id]}}}
+                onSelect={(channel) => router.push(`/chatContainer/channel/${channel.cid}`)}
+                PreviewAvatar={ChannelPreviewAvatar}/>
         </View>
     )
 }

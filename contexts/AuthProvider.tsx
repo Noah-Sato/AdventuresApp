@@ -45,7 +45,14 @@ export default function AuthProvider({ children }: PropsWithChildren) {
         .select('*')
         .eq('id', session.user.id)
         .single();
-      
+
+      // A failed fetch (e.g. the session hasn't fully hydrated into the
+      // client yet right after a reload) shouldn't clear an already-good
+      // profile -- that flips profile.id to undefined and back, which
+      // makes ChatProvider disconnect/reconnect the chat client mid-query.
+      if (error) {
+        return;
+      }
       setProfile(data);
       }
       fetchProfile();

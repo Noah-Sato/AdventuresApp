@@ -4,7 +4,7 @@ import l from '@theme/Layout'
 
 import { View, TouchableOpacity, StyleSheet, Image  } from 'react-native';
 import Person from '@assets/tabBarIcons/whatshot_24px.svg'
-import { supabase } from '~/utils/supabase'
+import { getAvatarPublicUrl } from '~/utils/avatarUrl'
 import { useEffect, useState } from 'react';
 
 
@@ -106,7 +106,8 @@ function EventsIcon( props ) {
     
 
     const UserIcon = ({userImage,iconSize,pictureStyles,iconStyles}) => {
-        if (userImage == undefined || userImage == "") {
+        const resolvedImage = getAvatarPublicUrl(userImage);
+        if (resolvedImage == undefined || resolvedImage == "") {
 
             
 
@@ -135,12 +136,12 @@ function EventsIcon( props ) {
                                 borderColor:borderColor,
                     }}>
     
-                        <Image 
+                        <Image
                             style={[pictureStyles, {
                                 borderRadius:l.roundness.max,
-                                   
+
                             }]}
-                            source={{uri:userImage}}
+                            source={{uri:resolvedImage}}
                             contentFit="cover"
                             transition={1000}
                         />

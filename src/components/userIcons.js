@@ -6,7 +6,7 @@ import { View, TouchableOpacity, StyleSheet  } from 'react-native';
 import Person from '@assets/profileIcons/person_24px.svg'
 import { Image } from 'expo-image';
 import { useEffect, useState } from 'react';
-import { supabase } from '~/utils/supabase'
+import { getAvatarPublicUrl } from '~/utils/avatarUrl'
 
 
 
@@ -25,15 +25,8 @@ function UserIcon( props ) {
         
     },[useImage])
 
-    const fetchImage = async (useImage) => {   
-
-        const {data, error} = await supabase.storage
-        .from('avatars')
-        .getPublicUrl(useImage)
-
-        
-
-        setImage(data.publicUrl)
+    const fetchImage = (useImage) => {
+        setImage(getAvatarPublicUrl(useImage))
     }
 
 

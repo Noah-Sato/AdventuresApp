@@ -12,6 +12,7 @@ import { format, isSameDay, isTomorrow, parse, parseISO,  } from 'date-fns'
 import { useEffect, useState } from 'react';
 import RightArrowButton from '@assets/ButtonIcons/chevron_right_24px_outlined.svg'
 import { supabase } from '~/utils/supabase'
+import { getAvatarPublicUrl } from '~/utils/avatarUrl'
 import { Link } from 'expo-router';
 
 //Api call take users name/Id and request all/spesific info based on the 
@@ -103,9 +104,7 @@ function EventsDisplay(props) {
     const fetchUserImage = async ({userID}) => {
         const {data: data, error}= await supabase.from('profiles').select('avatar_url').eq('id',userID).single()
         if (data !== null && data.avatar_url){
-            const {data:storageData, error} = await supabase.storage.from('avatars').getPublicUrl(data.avatar_url)
-
-            setUserImage(storageData.publicUrl)
+            setUserImage(getAvatarPublicUrl(data.avatar_url))
         }
     }
 

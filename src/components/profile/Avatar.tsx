@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '~/utils/supabase'
+import { getAvatarPublicUrl } from '~/utils/avatarUrl'
 import { StyleSheet, View, Alert, Image, Button } from 'react-native'
 import * as ImagePicker from 'expo-image-picker'
 
@@ -23,22 +24,8 @@ export default function Avatar({ url, size = 150, onUpload }: Props) {
     if (url) downloadImage(url);
   }, [url]);
 
-  async function downloadImage(path: string) {
-    try {
-      const { data, error } = await supabase.storage.from('avatars').getPublicUrl(path);
-      console.log(data, 'got data')
-
-      if (error) {
-        throw error;
-      }
-
-      setAvatarUrl(data.publicUrl)
-      
-    } catch (error) {
-      if (error instanceof Error) {
-        console.log('Error downloading image: ', error.message);
-      }
-    }
+  function downloadImage(path: string) {
+    setAvatarUrl(getAvatarPublicUrl(path))
   }
 
   async function uploadAvatar() {

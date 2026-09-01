@@ -16,6 +16,7 @@ import { SquareButton } from '@components/Buttons';
 import { MiscIcons } from '@theme/Icons'
 import { useStore } from '@store'
 import { useCreateEvent } from '@hooks/useEvents'
+import { useInviteFriends } from '@hooks/useAttendance'
 import FriendsBottomSheet from '@components/FriendsBottomSheet'
 
 import LocationBottomSheet from "@components/LocationBottomSheet";
@@ -47,6 +48,7 @@ export default function CreateEventPage() {
     const globalDateRange = useStore((state) => state.dateRange)
     const resetGlobalDateRange = useStore((state) => state.resetDateRange)
     const { createEvent } = useCreateEvent()
+    const { inviteFriends } = useInviteFriends()
 
     const [eventLocation, setEventLocation] = useState({})
     const [locationSelected, setLocationSelected] = useState(false)
@@ -129,6 +131,10 @@ export default function CreateEventPage() {
             setSubmitError(error.message)
             console.log(error.message)
             return
+        }
+
+        if (guests.length > 0) {
+            await inviteFriends(data.id, guests)
         }
 
         resetGlobalLocation()

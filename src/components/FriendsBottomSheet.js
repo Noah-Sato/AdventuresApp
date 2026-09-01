@@ -11,64 +11,6 @@ import { SquareButton } from '@components/Buttons';
 import { UserIcon } from '@components/userIcons';
 import { useFriends } from '@hooks/useFriends';
 
-// Dummy shape of `friends` from useFriends() -- matches FriendWithProfile[] (friends row + joined `profile`).
-// Swap the `data={friends}` prop below for `data={DUMMY_FRIENDS}` to design against this.
-const DUMMY_FRIENDS = [
-    {
-        id: 'f1a2b3c4-0001-4a1a-9c1a-000000000001',
-        requester_id: 'u-current-user-0000000000000001',
-        addressee_id: 'u-friend-000000000000000000001',
-        status: 'accepted',
-        pair_key: null,
-        created_at: '2026-06-01T12:00:00.000Z',
-        responded_at: '2026-06-01T12:05:00.000Z',
-        profile: {
-            id: 'u-friend-000000000000000000001',
-            username: 'jsmith',
-            full_name: 'Jamie Smith',
-            avatar_url: null,
-            website: null,
-            updated_at: '2026-06-01T12:00:00.000Z',
-        },
-    },
-    {
-        id: 'f1a2b3c4-0002-4a1a-9c1a-000000000002',
-        requester_id: 'u-friend-000000000000000000002',
-        addressee_id: 'u-current-user-0000000000000001',
-        status: 'accepted',
-        pair_key: null,
-        created_at: '2026-06-03T09:30:00.000Z',
-        responded_at: '2026-06-03T10:00:00.000Z',
-        profile: {
-            id: 'u-friend-000000000000000000002',
-            username: 'taylor_r',
-            full_name: 'Taylor Rodriguez',
-            avatar_url: null,
-            website: null,
-            updated_at: '2026-06-03T09:30:00.000Z',
-        },
-    },
-    {
-        id: 'f1a2b3c4-0003-4a1a-9c1a-000000000003',
-        requester_id: 'u-current-user-0000000000000001',
-        addressee_id: 'u-friend-000000000000000000003',
-        status: 'accepted',
-        pair_key: null,
-        created_at: '2026-06-10T18:45:00.000Z',
-        responded_at: '2026-06-10T19:00:00.000Z',
-        profile: {
-            id: 'u-friend-000000000000000000003',
-            username: 'morgan99',
-            full_name: null, // some profiles have no full_name -- item falls back to username
-            avatar_url: null, // some have no avatar -- UserIcon should handle null
-            website: null,
-            updated_at: '2026-06-10T18:45:00.000Z',
-        },
-        
-    }
-    
-];
-
 const FriendsBottomSheet = forwardRef(function FriendsBottomSheet({ selectedIds = [], onDone }, ref) {
     const { friends } = useFriends();
     const [selected, setSelected] = useState(selectedIds);
@@ -139,16 +81,11 @@ const FriendsBottomSheet = forwardRef(function FriendsBottomSheet({ selectedIds 
             </View>
             <BottomSheetFlatList
                 style={styles.list}
-                data={DUMMY_FRIENDS}
+                data={friends}
                 keyExtractor={(item) => item.id}
                 contentContainerStyle={styles.listContent}
-                onContentSizeChange={(width, height) => setListContentHeight(height)}
-                renderItem={({ item }) => {
-                    const isSelected = selected.includes(item.profile.id)
-                    return (
-                        <FriendItem data={item}/>
-                    )
-                }}
+                onContentSizeChange={(_width, height) => setListContentHeight(height)}
+                renderItem={({ item }) => <FriendItem data={item} />}
                 ListEmptyComponent={
                     <Text style={[bS.body2, { color: cl.grey.eighty, textAlign: 'center', paddingTop: l.spacing.l }]}>
                         {'No friends to invite yet'}

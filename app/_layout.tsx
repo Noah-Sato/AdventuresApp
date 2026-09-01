@@ -1,5 +1,6 @@
-// Must be the first import: patches crypto.getRandomValues, which uuid-generation code
-// elsewhere in the app (e.g. stream-chat's client-side message ids) depends on globally.
+// The real first-import guarantee lives in index.js (this file isn't the true entry point --
+// Expo Router's route discovery can require other files, and therefore this polyfill, before
+// this one runs). Kept here too as a harmless, self-documenting no-op via Metro's module cache.
 import 'react-native-get-random-values';
 
 import {  Stack } from 'expo-router';

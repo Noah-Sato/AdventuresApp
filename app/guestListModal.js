@@ -44,7 +44,7 @@ export default function Page() {
     const { event } = useEvent(id);
     const { attendees, refetch: refetchAttendees } = useEventAttendees(id);
     const { friends } = useFriends();
-    const { inviteFriends } = useInviteFriends(id);
+    const { inviteFriends } = useInviteFriends();
 
     const [selected, setSelected] = useState([]);
     const [inviting, setInviting] = useState(false);
@@ -65,7 +65,7 @@ export default function Page() {
     const onInvite = async () => {
         if (selected.length === 0) return;
         setInviting(true);
-        await inviteFriends(selected);
+        await inviteFriends(id, selected);
         setSelected([]);
         setInviting(false);
         refetchAttendees();

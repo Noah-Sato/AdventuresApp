@@ -74,7 +74,10 @@ export default function EditEventScreen() {
         setUploadingSlot('cover');
         pick(async (uri) => {
             const { error } = await uploadCover(id, uri);
-            if (error) Alert.alert(error.message);
+            if (error) {
+                console.log('uploadCover failed', JSON.stringify(error, null, 2));
+                Alert.alert(error.message);
+            }
         }).finally(() => setUploadingSlot(null));
     };
 
@@ -82,7 +85,10 @@ export default function EditEventScreen() {
         setUploadingSlot(slot);
         pick(async (uri) => {
             const { error } = await uploadDescriptionImage(id, slot, uri, event.description_images);
-            if (error) Alert.alert(error.message);
+            if (error) {
+                console.log('uploadDescriptionImage failed', JSON.stringify(error, null, 2));
+                Alert.alert(error.message);
+            }
         }).finally(() => setUploadingSlot(null));
     };
 

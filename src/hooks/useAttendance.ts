@@ -88,11 +88,11 @@ export function useMyAttendance(eventId: string | undefined) {
 // Host-side: invite a set of friends to an event (creates 'invited' attendance rows and adds
 // them to the event's Stream channel -- the host is already a member so has permission to do
 // the latter, unlike an invitee trying to add themselves before accepting).
-export function useInviteFriends(eventId: string | undefined) {
+export function useInviteFriends() {
   const { user } = useAuth();
   const { client } = useChatContext();
 
-  const inviteFriends = async (friendUserIds: string[]) => {
+  const inviteFriends = async (eventId: string | undefined, friendUserIds: string[]) => {
     if (!eventId || !user || friendUserIds.length === 0) return { error: null };
     const rows = friendUserIds.map((userId) => ({
       event_id: eventId,

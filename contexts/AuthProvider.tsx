@@ -1,13 +1,21 @@
 import { createContext, PropsWithChildren, useContext, useEffect, useState } from "react";
-import { Session } from "@supabase/supabase-js";
+import { Session, User } from "@supabase/supabase-js";
 import { supabase } from "~/utils/supabase";
 import { ActivityIndicator } from "react-native";
+import type { Profile } from "../types/db"
 
 
-const AuthContext = createContext({
+type AuthContextValue = {
+  session: Session | null;
+  user: User | undefined;
+  isAuthenticated: boolean;
+  profile: Profile | null;
+}
+
+const AuthContext = createContext<AuthContextValue>({
   session: null,
-  user: null,
-  isAuthenticated: null,
+  user: undefined,
+  isAuthenticated: false,
   profile: null,
 
 });
@@ -15,7 +23,7 @@ const AuthContext = createContext({
 export default function AuthProvider({ children }: PropsWithChildren) {
   const [session, setSession] = useState<Session | null>(null);
   const [isReady, setIsReady] = useState(false);
-  const [profile, setProfile] = useState();
+  const [profile, setProfile] = useState<Profile | null>(null);
 
   
 

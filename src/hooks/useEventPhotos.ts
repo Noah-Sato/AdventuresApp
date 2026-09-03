@@ -2,7 +2,9 @@ import { useCallback, useEffect, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { supabase } from '~/utils/supabase';
 import { useAuth } from '~/contexts/AuthProvider';
-import type { EventPhoto } from '@types/db';
+import type { EventPhoto } from '@schema/db';
+import * as ImagePicker from 'expo-image-picker';
+import { extFromAsset } from '../utilities';
 
 // The event-photos bucket is private (unlike avatars) -- visibility must follow the same
 // "any attendance row" rule as the table, which a public bucket's direct-URL access would
@@ -28,11 +30,11 @@ async function attachSignedUrls<T extends EventPhoto>(
 export function usePostEventPhoto() {
   const { user } = useAuth();
 
-  const postPhoto = async (eventId: string, imageUri: string) => {
+  const postPhoto = async (eventId: string, asset: ImagePicker.ImagePickerAsset) => {
     if (!user) return { error: new Error('Not authenticated') };
 
-    const arraybuffer = await fetch(imageUri).then((res) => res.arrayBuffer());
-    const ext = imageUri.split('.').pop()?.toLowerCase() ?? 'jpg';
+    const arraybuffer = await fetch(asset.uri).then((res) => res.arrayBuffer());
+    const ext = extFromAsset(asset);
     const path = `${eventId}/${uuidv4()}.${ext}`;
 
     const { error: uploadError } = await supabase.storage

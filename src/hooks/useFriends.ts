@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { supabase } from '~/utils/supabase';
 import { useAuth } from '~/contexts/AuthProvider';
-import type { Friend, Profile } from '@types/db';
+import type { Friend, Profile } from '@schema/db';
 
 export type FriendWithProfile = Friend & { profile: Profile };
 

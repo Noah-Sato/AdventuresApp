@@ -10,7 +10,7 @@ import { PageHeader } from '@components/pageGeneral/pageHeader';
 import { UserIcon } from '@components/userIcons';
 
 import { useFriends, useUserSearch } from '@hooks/useFriends';
-import type { Profile } from '@types/db';
+import type { Profile } from '@schema/db';
 
 export default function AddFriendScreen() {
   const [query, setQuery] = useState('');

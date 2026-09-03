@@ -14,6 +14,7 @@ import { PageHeader } from '@components/pageGeneral/pageHeader';
 import { useUpcomingEvents, usePublicEvents } from '@hooks/useEvents';
 import { useMyAttendance } from '@hooks/useAttendance';
 import { useUnifiedPhotoFeed } from '@hooks/useEventPhotos';
+import { pickImage } from '../../src/utilities';
 
 // Posting window mirrors the RLS policy: 2h before start_date through 24h after end_date
 // (or start_date + 4h if no end_date set). This is a UX-only check -- RLS is the real gate.

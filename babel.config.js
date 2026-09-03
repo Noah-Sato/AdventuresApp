@@ -18,7 +18,7 @@ module.exports = function (api) {
                 "@hooks" : "./src/hooks",
                 "@src": "./src",
                 "@contexts": "./contexts",
-                "@types":"./types"
+                "@schema":"./types"
             },
         }],
     ["module:react-native-dotenv", {

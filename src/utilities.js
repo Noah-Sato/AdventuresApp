@@ -3,7 +3,8 @@
 
 //import * as Location from 'expo-location';
 import {compareAsc  } from "date-fns";
-
+import * as ImagePicker from "expo-image-picker";
+import { Alert } from "react-native";
 import { Dictionary } from "./config/Dictionary";
 
 /*export const updateUserLocation = async (askedBefore = false) => {
@@ -31,8 +32,43 @@ import { Dictionary } from "./config/Dictionary";
 
 
 
+export const pickImage = async function(source, options={}) {
+  if (source == 'camera') {
+    const permission = await ImagePicker.requestCameraPermissionsAsync();
+    console.log('camera permission result:', permission)
+
+    if (!permission.granted) {
+      Alert.alert('camera access is needed to take a photo.');
+      return null;
+    }
+
+    const result = await ImagePicker.launchCameraAsync(options);
+    if (result.canceled || !result.assets?.length) {
+      return null;
+    }
+    return result.assets[0];
+  }
+
+  const result = await ImagePicker.launchImageLibraryAsync(options);
+  if (result.canceled || !result.assets?.length) {
+      return null;
+  }
+  return result.assets[0]
+}
 
 
+export const extFromAsset = function(asset) {
+  console.log('new function used')
+  const uriExt = asset.uri.split('.').pop();
+  const looksLikeRealExt = uriExt && /^[a-z0-9]{2,4}$/i.test(uriExt);
+  if (looksLikeRealExt) {
+    return uriExt.toLowerCase();
+  }
+  
+  const mimeExt = asset.mimeType?.split('/').pop()
+  return mimeExt == 'jpeg' ? 'jpg' : (mimeExt ?? 'jpg');
+
+}
 
 export const haversineDistance = function(lat1, lon1, lat2, lon2) {
   const toRadians = angle => angle * (Math.PI / 180);

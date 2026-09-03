@@ -15,13 +15,13 @@ import { UserIcon } from '@components/userIcons'
 import { IconContainer } from '../src/components/IconContainer';
 import Edit from '@assets/ButtonIcons/border_color_24px_outlined.svg'
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { supabase } from '~/utils/supabase'
 import { useAuth } from '~/contexts/AuthProvider';
 import { router } from 'expo-router';
-import * as ImagePicker from 'expo-image-picker'
 
-import Avatar from '@components/profile/Avatar.tsx'
+import { Avatar } from '@components/profile/Avatar.tsx'
+import PhotoSourceBottomSheet from '@components/PhotoSourceBottomSheet'
 
 
 
@@ -31,8 +31,8 @@ import Avatar from '@components/profile/Avatar.tsx'
 
 export default function Page() {
     const insets = useSafeAreaInsets()
-    
-    const [uploading, setUploading] = useState(false)
+    const avatarRef = useRef(null);
+    const photoSheetRef = useRef(null);
     const [loading, setLoading] = useState(true)
     const [username, setUsername] = useState('')
     const [website, setWebsite] = useState('')
@@ -44,43 +44,6 @@ export default function Page() {
   useEffect(() => {
     if (session) getProfile()
   }, [session])
-
-  async function uploadAvatar() {
-    try {
-      setUploading(true)
-
-      const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images, // Restrict to only images
-        allowsMultipleSelection: false, // Can only select one image
-        allowsEditing: true, // Allows the user to crop / rotate their photo before uploading it
-        quality: 1,
-        exif: false, // We don't want nor need that data.
-      })
-
-      if (result.canceled || !result.assets || result.assets.length === 0) {
-        console.log('User cancelled image picker.')
-        return
-      }
-
-      const image = result.assets[0]
-      setAvatarUrl(image.uri)
-      console.log('Got image', image)
-
-      if (!image.uri) {
-        throw new Error('No image uri!') // Realistically, this should never happen, but just in case...
-      }
-
-      
-    } catch (error) {
-      if (error instanceof Error) {
-        Alert.alert(error.message)
-      } else {
-        throw error
-      }
-    } finally {
-      setUploading(false)
-    }
-  }
 
   async function getProfile() {
     try {
@@ -146,6 +109,11 @@ export default function Page() {
     }
   }
 
+  const onPhotoSourceSelected = (source) => {
+    avatarRef.current?.handlePhotoSource(source);
+  };
+
+
   if (loading) {
     return (
         <View style={{height:l.screen.height, justifyContent:'center', alignItems:'center',alignContent:'center'}}>
@@ -174,6 +142,8 @@ export default function Page() {
                     <View>
                       
                       <Avatar
+                        ref={avatarRef}
+                        onPressUpload={()=>photoSheetRef.current?.expand()}
                         size={200}
                         url={avatarUrl}
                         onUpload={(url) => {
@@ -299,7 +269,8 @@ export default function Page() {
                     </View>
                 </View>
             </ScrollView>
-        </View>
+        </View>            
+        <PhotoSourceBottomSheet ref={photoSheetRef} onSelect={onPhotoSourceSelected}/>
     </View>
         
     )

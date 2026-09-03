@@ -2,8 +2,10 @@ import { useCallback, useEffect, useState } from 'react';
 import { useChatContext } from 'stream-chat-expo';
 import { supabase } from '~/utils/supabase';
 import { useAuth } from '~/contexts/AuthProvider';
-import type { Event, Profile } from '@types/db';
-import type { TablesInsert } from '@types/supabase';
+import type { Event, Profile } from '@schema/db';
+import type { TablesInsert } from '@schema/supabase';
+import { extFromAsset } from '../utilities';
+import * as ImagePicker from "expo-image-picker";
 
 export type NewEvent = Omit<TablesInsert<'events'>, 'host_id'>;
 export type EventWithHost = Event & { host: Profile };
@@ -46,7 +48,8 @@ export function useUpcomingEvents() {
       .from('attendance')
       .select('events(*)')
       .eq('user_id', user.id)
-      .order('start_date', { foreignTable: 'events', ascending: true });
+      .order('start_date', { foreignTable: 'events', ascending: true })
+      .returns<{ events: Event | null }[]>();
     if (!error && data) {
       setEvents(data.map((row) => row.events).filter((e): e is Event => e !== null));
     }
@@ -163,9 +166,9 @@ export function useCreateEvent() {
 // only (the edit screen hides itself once the event starts), not at the RLS layer, since this
 // isn't a shared-space security boundary the way feed posting is.
 export function useEventCoverPhotos() {
-  const uploadCover = async (eventId: string, imageUri: string) => {
-    const arraybuffer = await fetch(imageUri).then((res) => res.arrayBuffer());
-    const ext = imageUri.split('.').pop()?.toLowerCase() ?? 'jpg';
+  const uploadCover = async (eventId: string, asset: ImagePicker.ImagePickerAsset) => {
+    const arraybuffer = await fetch(asset.uri).then((res) => res.arrayBuffer());
+    const ext = extFromAsset(asset)
     const path = `${eventId}/cover.${ext}`;
 
     const { error: uploadError } = await supabase.storage
@@ -184,11 +187,11 @@ export function useEventCoverPhotos() {
   const uploadDescriptionImage = async (
     eventId: string,
     slot: 0 | 1,
-    imageUri: string,
+    asset: ImagePicker.ImagePickerAsset,
     currentImages: string[] | null
   ) => {
-    const arraybuffer = await fetch(imageUri).then((res) => res.arrayBuffer());
-    const ext = imageUri.split('.').pop()?.toLowerCase() ?? 'jpg';
+    const arraybuffer = await fetch(asset.uri).then((res) => res.arrayBuffer());
+    const ext = extFromAsset(asset)
     const path = `${eventId}/description-${slot}.${ext}`;
 
     const { error: uploadError } = await supabase.storage

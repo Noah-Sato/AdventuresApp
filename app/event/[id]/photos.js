@@ -1,7 +1,6 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { router, useLocalSearchParams } from 'expo-router';
 import { View, FlatList, Image, ActivityIndicator, Alert } from 'react-native';
-import * as ImagePicker from 'expo-image-picker';
 
 import { mainStyles, bS } from '@theme/Styles';
 import cl from '@theme/Colours';
@@ -9,11 +8,19 @@ import l from '@theme/Layout';
 import { Text } from '@components/Text';
 import { PageHeader } from '@components/pageGeneral/pageHeader';
 import { SquareButton } from '@components/Buttons';
+import PhotoSourceBottomSheet from '@components/PhotoSourceBottomSheet'
+import { pickImage } from '@src/utilities.js';
 
 import { useEvent } from '@hooks/useEvents';
 import { useMyAttendance } from '@hooks/useAttendance';
 import { useEventPhotos, usePostEventPhoto } from '@hooks/useEventPhotos';
 import { useAuth } from '~/contexts/AuthProvider';
+
+
+
+
+
+
 
 // UX-only mirror of the RLS posting window -- RLS is the real enforcement boundary.
 function isWithinPostingWindow(event) {
@@ -58,20 +65,22 @@ export default function EventPhotosScreen() {
     const { photos, loading, refetch } = useEventPhotos(id);
     const { postPhoto } = usePostEventPhoto();
     const [posting, setPosting] = useState(false);
+    const photoSheetRef = useRef(null);
+
 
     const isHost = event && session?.user.id === event.host_id;
     const canPost = (isHost || attendance?.status === 'going') && isWithinPostingWindow(event);
 
-    const onPost = async () => {
-        const result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+    const onPhotoSourceSelected = async (source) => {
+        const asset = await pickImage(source, {
+            mediaTypes: ['images'],
             allowsEditing: true,
             quality: 0.8,
         });
-        if (result.canceled || !result.assets?.length) return;
+        if (!asset) return;
 
         setPosting(true);
-        const { error } = await postPhoto(id, result.assets[0].uri);
+        const { error } = await postPhoto(id, asset);
         setPosting(false);
 
         if (error) {
@@ -101,12 +110,13 @@ export default function EventPhotosScreen() {
                         label={posting ? 'Posting...' : 'Post a Photo'}
                         fill={true}
                         size={'medium'}
-                        onPress={onPost}
+                        onPress={()=> photoSheetRef.current?.expand()}
                     />
                 </View>
             )}
 
             <PhotoGrid photos={photos} />
+            <PhotoSourceBottomSheet ref={photoSheetRef} onSelect={onPhotoSourceSelected} />
         </View>
     )
 }

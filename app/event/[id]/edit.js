@@ -1,7 +1,6 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { router, useLocalSearchParams, Redirect } from 'expo-router';
 import { View, Image, ActivityIndicator, Alert } from 'react-native';
-import * as ImagePicker from 'expo-image-picker';
 
 import { mainStyles, bS } from '@theme/Styles';
 import cl from '@theme/Colours';
@@ -9,6 +8,8 @@ import l from '@theme/Layout';
 import { Text } from '@components/Text';
 import { PageHeader } from '@components/pageGeneral/pageHeader';
 import { SquareButton } from '@components/Buttons';
+import PhotoSourceBottomSheet from '@components/PhotoSourceBottomSheet';
+import { pickImage } from '@src/utilities.js';
 
 import { useAuth } from '~/contexts/AuthProvider';
 import { useEvent, useEventCoverPhotos } from '@hooks/useEvents';
@@ -43,6 +44,11 @@ export default function EditEventScreen() {
     const { event, loading, refetch } = useEvent(id);
     const { uploadCover, uploadDescriptionImage } = useEventCoverPhotos();
     const [uploadingSlot, setUploadingSlot] = useState(null);
+    const photoSheetRef = useRef(null);
+    // Which of the three targets ('cover' | 0 | 1) is waiting on the sheet's answer --
+    // all three PhotoSlots share one sheet/ref, so this is how onPhotoSourceSelected knows
+    // which upload function to call once the user picks a source.
+    const pendingTargetRef = useRef(null);
 
     if (loading) {
         return (
@@ -59,37 +65,38 @@ export default function EditEventScreen() {
 
     if (!canEdit) return <Redirect href="../" />
 
-    const pick = async (onUpload) => {
-        const result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+    const openPicker = (target) => {
+        pendingTargetRef.current = target;
+        photoSheetRef.current?.expand();
+    };
+
+    const onPhotoSourceSelected = async (source) => {
+        const target = pendingTargetRef.current;
+        if (target === null) return;
+
+        setUploadingSlot(target);
+
+        const asset = await pickImage(source, {
+            mediaTypes: ['images'],
             allowsEditing: true,
             quality: 0.8,
         });
-        if (result.canceled || !result.assets?.length) return;
-        await onUpload(result.assets[0].uri);
-        refetch();
-    };
 
-    const onPickCover = () => {
-        setUploadingSlot('cover');
-        pick(async (uri) => {
-            const { error } = await uploadCover(id, uri);
-            if (error) {
-                console.log('uploadCover failed', JSON.stringify(error, null, 2));
-                Alert.alert(error.message);
-            }
-        }).finally(() => setUploadingSlot(null));
-    };
+        if (asset) {
+            const { error } = target === 'cover'
+                ? await uploadCover(id, asset)
+                : await uploadDescriptionImage(id, target, asset, event.description_images);
 
-    const onPickDescription = (slot) => {
-        setUploadingSlot(slot);
-        pick(async (uri) => {
-            const { error } = await uploadDescriptionImage(id, slot, uri, event.description_images);
             if (error) {
-                console.log('uploadDescriptionImage failed', JSON.stringify(error, null, 2));
+                console.log('photo upload failed', JSON.stringify(error, null, 2));
                 Alert.alert(error.message);
+            } else {
+                refetch();
             }
-        }).finally(() => setUploadingSlot(null));
+        }
+
+        pendingTargetRef.current = null;
+        setUploadingSlot(null);
     };
 
     return (
@@ -102,24 +109,25 @@ export default function EditEventScreen() {
                 <PhotoSlot
                     label={'Cover Photo'}
                     url={event.image_url}
-                    onPick={onPickCover}
+                    onPick={() => openPicker('cover')}
                     uploading={uploadingSlot === 'cover'}
                 />
                 <PhotoSlot
                     label={'Description Photo 1'}
                     url={event.description_images?.[0]}
-                    onPick={() => onPickDescription(0)}
+                    onPick={() => openPicker(0)}
                     uploading={uploadingSlot === 0}
                 />
                 <PhotoSlot
                     label={'Description Photo 2'}
                     url={event.description_images?.[1]}
-                    onPick={() => onPickDescription(1)}
+                    onPick={() => openPicker(1)}
                     uploading={uploadingSlot === 1}
                 />
 
                 <SquareButton label={'Done'} fill={true} size={'medium'} onPress={() => router.navigate('../')} />
             </View>
+            <PhotoSourceBottomSheet ref={photoSheetRef} onSelect={onPhotoSourceSelected} />
         </View>
     )
 }

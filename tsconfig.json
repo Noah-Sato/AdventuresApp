@@ -14,7 +14,7 @@
       "@hooks/*": ["src/hooks/*"],
       "@src/*": ["src/*"],
       "@contexts/*": ["contexts/*"],
-      "@types/*": ["types/*"]
+      "@schema/*": ["types/*"]
     }
   },
   "include": ["**/*.ts", "**/*.tsx", ".expo/types/**/*.ts", "expo-env.d.ts"]

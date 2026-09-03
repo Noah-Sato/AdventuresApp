@@ -2,8 +2,8 @@ import { useCallback, useEffect, useState } from 'react';
 import { useChatContext } from 'stream-chat-expo';
 import { supabase } from '~/utils/supabase';
 import { useAuth } from '~/contexts/AuthProvider';
-import type { Attendance, Profile } from '@types/db';
-import type { Enums } from '@types/supabase';
+import type { Attendance, Profile } from '@schema/db';
+import type { Enums } from '@schema/supabase';
 
 export type AttendeeWithProfile = Attendance & { profile: Profile };
 

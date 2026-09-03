@@ -107,7 +107,6 @@ export type Database = {
       }
       events: {
         Row: {
-          capacity: number | null
           category: string | null
           created_at: string
           description: string | null
@@ -125,7 +124,6 @@ export type Database = {
           visibility: Database["public"]["Enums"]["event_visibility"]
         }
         Insert: {
-          capacity?: number | null
           category?: string | null
           created_at?: string
           description?: string | null
@@ -143,7 +141,6 @@ export type Database = {
           visibility?: Database["public"]["Enums"]["event_visibility"]
         }
         Update: {
-          capacity?: number | null
           category?: string | null
           created_at?: string
           description?: string | null

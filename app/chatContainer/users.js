@@ -69,8 +69,6 @@ function PageHeader(props) {
 
 
 export default function UsersScreen() {
-    const [users, setUsers] = useState([])
-    const { user } = useAuth()
     const [query, setQuery] = useState('');
     const { friends } = useFriends();
 
@@ -79,14 +77,6 @@ export default function UsersScreen() {
     )
 
 
-    useEffect(()=>{
-        const fetchUsers = async() => {
-            let {data: profiles, error} = await supabase.from('profiles').select('*').neq('id', user.id);
-            setUsers(profiles);
-        }
-
-        fetchUsers();
-    }, [])
 
     return(
         <View style={[mainStyles.page]}>

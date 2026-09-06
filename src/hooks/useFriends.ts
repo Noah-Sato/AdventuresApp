@@ -104,3 +104,21 @@ export function useUserSearch() {
 
   return { search };
 }
+
+
+export function useProfile(userId: string | undefined) { 
+  const [profile, setProfile] = useState<Profile | null>(null);
+  const [loading, setLoading] = useState(false)
+
+  useEffect(() => {
+    if (!userId) return;
+    setLoading(true);
+    supabase.from('profiles').select('*').eq('id', userId).single()
+      .then(({ data, error}) => {
+        if(!error) setProfile(data as Profile);
+        setLoading(false)
+      });
+  }, [userId])
+
+  return { profile, loading}
+}

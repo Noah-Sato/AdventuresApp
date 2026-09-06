@@ -33,7 +33,7 @@ function isWithinPostingWindow(event) {
     return now >= windowStart && now <= windowEnd
 }
 
-export function PhotoGrid({ photos, numColumns = 3 }) {
+export function PhotoGrid({ photos, numColumns = 3, ...flatListProps }) {
     return (
         <FlatList
             data={photos}
@@ -53,6 +53,7 @@ export function PhotoGrid({ photos, numColumns = 3 }) {
                     {'No photos yet.'}
                 </Text>
             }
+            {...flatListProps}
         />
     )
 }

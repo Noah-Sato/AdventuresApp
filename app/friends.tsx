@@ -50,18 +50,24 @@ function RequestRow({
 
 function FriendRow({ friend }: { friend: FriendWithProfile }) {
   return (
-    <View
-      style={{
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: l.spacing.s,
-        paddingVertical: l.spacing.s,
-        paddingHorizontal: l.margins.page,
-      }}>
-      <UserIcon userImage={friend.profile.avatar_url} size={'small'} />
-      <Text style={[bS.body2, { color: cl.basic.white }]}>
-        {friend.profile.full_name ?? friend.profile.username}
-      </Text>
+    <View>
+      <TouchableOpacity
+        onPress={() => {
+          const otherId = friend.profile.id
+          if (otherId) router.push(`/user/${otherId}`)
+        }}
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          gap: l.spacing.s,
+          paddingVertical: l.spacing.s,
+          paddingHorizontal: l.margins.page,
+        }}>
+        <UserIcon userImage={friend.profile.avatar_url} size={'small'} />
+        <Text style={[bS.body2, { color: cl.basic.white }]}>
+          {friend.profile.full_name ?? friend.profile.username}
+        </Text>
+      </TouchableOpacity>
     </View>
   );
 }

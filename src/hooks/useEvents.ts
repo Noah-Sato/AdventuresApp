@@ -3,14 +3,63 @@ import { useChatContext } from 'stream-chat-expo';
 import { supabase } from '~/utils/supabase';
 import { useAuth } from '~/contexts/AuthProvider';
 import type { Event, Profile } from '@schema/db';
-import type { TablesInsert } from '@schema/supabase';
-import { extFromAsset } from '../utilities';
+import type { TablesInsert, Enums } from '@schema/supabase';
+import { extFromAsset, hasEventFinished } from '../utilities';
 import * as ImagePicker from "expo-image-picker";
+
+
 
 export type NewEvent = Omit<TablesInsert<'events'>, 'host_id'>;
 export type EventWithHost = Event & { host: Profile };
 
-// Events hosted by the current user.
+// Shared by useUpcomingEvents / useMyEvents / useDeclinedEvents: attendance rows for this
+// user, joined to their events, optionally filtered by status, always excluding events
+// that have already finished.
+
+async function fetchAttendedEvents(userId:string, statusFilter?: Enums<'attendance_status'>[]) {
+  let query = supabase
+  .from('attendance')
+  .select('events(*)')
+  .eq('user_id', userId)
+  .order('start_date', {foreignTable: 'events', ascending: true});
+
+  if (statusFilter) query = query.in('status', statusFilter);
+
+  const { data, error } = await query.returns<{ events: Event | null }[]>();
+  if (error || !data) return [];
+  return data.map((row) => row.events).filter((e): e is Event => e !== null && !hasEventFinished(e))
+}
+
+
+
+
+export function usePastEvents() {
+  const { user } = useAuth();
+  const [events, setEvents] = useState<Event[]>([]);
+  const [loading, setLoading] = useState(false);
+
+
+  const fetchPastEvents = useCallback(async () => {
+    if(!user) return;
+    setLoading(true)
+    const { data, error } = await supabase
+    .from('attendance')
+    .select('events(*)')
+    .eq('user_id', user.id)
+    .eq('status', 'going')
+    .order('start_date', { foreignTable: 'events', ascending:false})
+    .returns<{ events: Event | null }[]>();
+  if (!error && data) {
+    const past = data.map((row) => row.events).filter((e): e is Event => e !== null && hasEventFinished(e));
+    setEvents(past)
+  }
+  setLoading(false)
+  }, [user]);
+
+  useEffect(() => { fetchPastEvents(); }, [fetchPastEvents]);
+  return { events, loading, refetch: fetchPastEvents};
+}
+
 export function useMyEvents() {
   const { user } = useAuth();
   const [events, setEvents] = useState<Event[]>([]);
@@ -19,12 +68,7 @@ export function useMyEvents() {
   const fetchMyEvents = useCallback(async () => {
     if (!user) return;
     setLoading(true);
-    const { data, error } = await supabase
-      .from('events')
-      .select('*')
-      .eq('host_id', user.id)
-      .order('start_date', { ascending: true });
-    if (!error && data) setEvents(data);
+    setEvents(await fetchAttendedEvents(user.id, ['going', 'maybe', 'invited']))
     setLoading(false);
   }, [user]);
 
@@ -33,6 +77,24 @@ export function useMyEvents() {
   }, [fetchMyEvents]);
 
   return { events, loading, refetch: fetchMyEvents };
+}
+
+
+export function useDeclinedEvents() {
+  const { user } = useAuth();
+  const [events, setEvents] = useState<Event[]>([]);
+  const [loading, setLoading] = useState(false);
+
+
+  const fetchDeclined = useCallback( async () => {
+    if (!user) return
+    setLoading(true);
+    setEvents(await fetchAttendedEvents(user.id, ['declined']));
+    setLoading(false);
+  }, [user])
+
+  useEffect(() => { fetchDeclined(); }, [fetchDeclined]);
+  return { events, loading, refetch: fetchDeclined };
 }
 
 // Events the current user is invited to or attending (any attendance row, any status).
@@ -44,15 +106,7 @@ export function useUpcomingEvents() {
   const fetchUpcoming = useCallback(async () => {
     if (!user) return;
     setLoading(true);
-    const { data, error } = await supabase
-      .from('attendance')
-      .select('events(*)')
-      .eq('user_id', user.id)
-      .order('start_date', { foreignTable: 'events', ascending: true })
-      .returns<{ events: Event | null }[]>();
-    if (!error && data) {
-      setEvents(data.map((row) => row.events).filter((e): e is Event => e !== null));
-    }
+    setEvents(await fetchAttendedEvents(user.id, ['going', 'maybe', 'invited']));
     setLoading(false);
   }, [user]);
 
@@ -147,6 +201,7 @@ export function useCreateEvent() {
     try {
       const channel = client.channel('messaging', data.id, {
         name: data.title,
+        image: data.image_uri ?? undefined,
         members: [user.id],
       });
       await channel.create();
@@ -166,6 +221,7 @@ export function useCreateEvent() {
 // only (the edit screen hides itself once the event starts), not at the RLS layer, since this
 // isn't a shared-space security boundary the way feed posting is.
 export function useEventCoverPhotos() {
+  const { client } = useChatContext();
   const uploadCover = async (eventId: string, asset: ImagePicker.ImagePickerAsset) => {
     const arraybuffer = await fetch(asset.uri).then((res) => res.arrayBuffer());
     const ext = extFromAsset(asset)
@@ -181,6 +237,17 @@ export function useEventCoverPhotos() {
       .from('events')
       .update({ image_url: urlData.publicUrl })
       .eq('id', eventId);
+
+    if (!error) {
+      try {
+        // channel.update() replaces the entire custom data object, not just the fields
+        // passed in -- sending only `image` would wipe out `name` and leave Stream's UI
+        // falling back to a member's name for the channel. updatePartial merges instead.
+        await client.channel('messaging', eventId).updatePartial({ set: { image: urlData.publicUrl } });
+      } catch (channelError) {
+        console.log('failed to update channel image', channelError)
+      }
+    }
     return { error };
   };
 

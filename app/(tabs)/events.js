@@ -10,7 +10,7 @@ import l from '@theme/Layout'
 
 import  { EventsPageDisplay, YourEventsDisplay }  from '@components/listDisplays/eventsVertDisplay';
 import { PageHeader } from '@components/pageGeneral/pageHeader'
-import { EventPageHeader } from './Components/uniquePageheaders';
+import { EventPageHeader } from '@components/pageGeneral/uniquePageheaders';
 import { SquareButton } from '@components/Buttons';
 
 import { TabDisplay } from '@components/pageGeneral/TabDisplay';

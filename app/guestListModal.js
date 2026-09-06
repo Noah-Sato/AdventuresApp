@@ -97,24 +97,30 @@ export default function Page() {
                             renderItem={({ item }) => {
                                 const isSelected = selected.includes(item.profile.id);
                                 return (
-                                    <TouchableOpacity
-                                        onPress={() => toggleSelected(item.profile.id)}
+                                    <View
                                         style={{
                                             flexDirection: 'row',
                                             alignItems: 'center',
                                             justifyContent: 'space-between',
                                             paddingVertical: l.spacing.xs,
                                         }}>
-                                        <View style={{ flexDirection: 'row', alignItems: 'center', gap: l.spacing.s }}>
+                                        <TouchableOpacity
+                                            style={{ flexDirection: 'row', alignItems: 'center', gap: l.spacing.s }}
+                                            onPress={() => {
+                                                const otherId = item.profile.id
+                                                if (otherId) router.push(`/user/${otherId}`)
+                                            }}>
                                             <UserIcon userImage={item.profile.avatar_url} size={'small'} />
                                             <Text style={[bS.body2, { color: cl.basic.white }]}>
                                                 {item.profile.full_name ?? item.profile.username}
                                             </Text>
-                                        </View>
-                                        <Text style={[bS.body3, { color: isSelected ? cl.green.light_thirty : cl.grey.eighty }]}>
-                                            {isSelected ? 'Selected' : 'Select'}
-                                        </Text>
-                                    </TouchableOpacity>
+                                        </TouchableOpacity>
+                                            <TouchableOpacity onPress={() => toggleSelected(item.profile.id)}>
+                                            <Text style={[bS.body3, { color: isSelected ? cl.green.light_thirty : cl.grey.eighty }]}>
+                                                {isSelected ? 'Selected' : 'Select'}
+                                            </Text>
+                                            </TouchableOpacity>
+                                    </View>
                                 );
                             }}
                             ListEmptyComponent={

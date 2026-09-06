@@ -1,7 +1,7 @@
 
 
 import { View, ActivityIndicator, TouchableOpacity } from 'react-native';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Channel, MessageList, MessageInput, useChatContext, useChannelPreviewDisplayAvatar } from 'stream-chat-expo';
 
@@ -33,17 +33,44 @@ export default function ChannelScreen() {
     const parsedEventId = cid?.split(':')[1]
     const { event } = useEvent(parsedEventId)
 
+    // Expo Router reuses this screen instance across navigations between two [cid] routes,
+    // so `channel` state from the previously viewed chat can still be set while `cid` (and
+    // therefore `event`) has already moved on. Track the latest requested cid in a ref so an
+    // in-flight fetch for a since-abandoned channel can't clobber state after the user has
+    // navigated elsewhere.
+    const cidRef = useRef(cid);
+    cidRef.current = cid;
+
+    // Stream's default 'messaging' permissions only grant UpdateChannel to the channel's
+    // creator -- attendees stay 'channel_member' and get a permission error, so only the
+    // host (who created the channel) may attempt this backfill. The channel.cid check guards
+    // against the same stale-state race described above ever pairing a leftover channel with
+    // the newly loaded event.
+    useEffect(() => {
+        const isHost = channel?.data?.created_by?.id === client.userID;
+        if (event?.image_url && channel && channel.cid === cid && !channel.data?.image && isHost) {
+            // updatePartial merges just the given field -- channel.update() replaces the
+            // whole custom data object and would wipe out `name`, leaving Stream's UI to
+            // fall back to a member's name for the channel.
+            channel.updatePartial({ set: { image: event.image_url } }).catch((err) =>
+                console.log('failed to backfill channel image', err)
+            );
+        }
+    }, [event, channel, cid]);
+
     // queryChannels hits the same Stream HTTP client (and 3s timeout) that can reject right
     // after the app resumes from background -- without a catch here that left `channel`
     // unset forever, stranding the user on a bare spinner with no way back.
     const fetchChannel = async () => {
         setChannelError(false);
+        setChannel(undefined);
+        const requestedCid = cid;
         try {
-            const res = await client.queryChannels({ cid });
-            setChannel(res[0]);
+            const res = await client.queryChannels({ cid: requestedCid });
+            if (cidRef.current === requestedCid) setChannel(res[0]);
         } catch (err) {
             console.warn('Failed to load channel:', err);
-            setChannelError(true);
+            if (cidRef.current === requestedCid) setChannelError(true);
         }
     };
 
@@ -115,7 +142,10 @@ export default function ChannelScreen() {
     
         <View style={[{flex: 1, backgroundColor:cl.basic.white}]}>
             <View style={{paddingBottom:l.spacing.s}}>
-                <CustomChatHeader channel={channel} onBackPress={() => router.navigate('../')} fontSize={bS.h2} onProfilePress={() => console.log('wire to friend profile page when built')}/>
+                <CustomChatHeader channel={channel} onBackPress={() => router.navigate('../')} fontSize={bS.h2} onProfilePress={() => {
+                    const otherId = Object.keys(channel.state.members).find((id) => id !== client.userID)
+                    if (otherId) router.push(`/user/${otherId}`)
+                }}/>
             </View>
 
             {event &&

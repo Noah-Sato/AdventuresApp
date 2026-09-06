@@ -25,10 +25,12 @@ export default function RootLayout() {
               <Stack.Screen name="(auth)" options={{ headerShown: false }} />
               <Stack.Screen name='createEvent' options={{headerShown: false}} />
               <Stack.Screen name="event/[id]" options={{ headerShown: false }} />
+              <Stack.Screen name="user/[id]" options={{ headerShown: false }} />
               <Stack.Screen name="modal" options={{ presentation: 'modal', headerShown: false  }} />
               <Stack.Screen name="editUserModal" options={{ presentation: 'modal', headerShown: false  }} />
               <Stack.Screen name="guestListModal" options={{ presentation: 'modal', headerShown: false  }} />
               <Stack.Screen name="addFriend" options={{ presentation: 'modal', headerShown: false  }} />
+              <Stack.Screen name="notAttendingEvents" options={{ presentation: 'modal', headerShown: false}} />
               <Stack.Screen name="friends" options={{ headerShown: false }} />
               <Stack.Screen name="settings" options={{ headerShown: false }} />
               <Stack.Screen name="memoryBank" options={{ headerShown: false }} />

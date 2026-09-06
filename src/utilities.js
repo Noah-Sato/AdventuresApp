@@ -30,7 +30,11 @@ import { Dictionary } from "./config/Dictionary";
 
 
 
-
+export const hasEventFinished = function(event) {
+  const start = new Date(event.start_date)
+  const end = event.end_date ? new Date(event.end_date) : new Date(start.getTime() + 4 * 60 * 60 * 1000)
+  return new Date() > end;
+}
 
 export const pickImage = async function(source, options={}) {
   if (source == 'camera') {

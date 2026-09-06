@@ -10,24 +10,20 @@ import { UserIcon } from "../userIcons";
 import { useChatContext } from "stream-chat-expo";
 import { useAuth } from '~/contexts/AuthProvider';
 import { router } from "expo-router";
+import { useStartDirectMessage } from '@hooks/useChat'
 
 
 
 export  function ListItem ({user}) {
-
+    const { startDirectMessage } = useStartDirectMessage();
     
 
     const { client } = useChatContext()
     const { user: me } = useAuth()
 
     const onPress = async () => {
-
-        const channel = client.channel('messaging', {
-            members: [me.id, user.id]
-        });
-
-        await channel.watch();
-        router.replace(`/chatContainer/channel/${channel.cid}`)
+        const cid = await startDirectMessage(user.id);
+        router.replace(`/chatContainer/channel/${cid}`)
     }
 
 

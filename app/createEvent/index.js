@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from "react";
-import { View, ScrollView, TouchableOpacity, Modal, TextInput, StyleSheet } from "react-native";
+import { View, Image, ScrollView, TouchableOpacity, Modal, TextInput, StyleSheet } from "react-native";
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import { router, useFocusEffect } from "expo-router";
 import * as Location from 'expo-location';
@@ -15,9 +15,11 @@ import { Text } from '@components/Text';
 import { SquareButton } from '@components/Buttons';
 import { MiscIcons } from '@theme/Icons'
 import { useStore } from '@store'
-import { useCreateEvent } from '@hooks/useEvents'
+import { useCreateEvent, useEventCoverPhotos } from '@hooks/useEvents'
 import { useInviteFriends } from '@hooks/useAttendance'
 import FriendsBottomSheet from '@components/FriendsBottomSheet'
+import PhotoSourceBottomSheet from '@components/PhotoSourceBottomSheet'
+import { pickImage } from '@src/utilities.js'
 
 import LocationBottomSheet from "@components/LocationBottomSheet";
 
@@ -48,6 +50,7 @@ export default function CreateEventPage() {
     const globalDateRange = useStore((state) => state.dateRange)
     const resetGlobalDateRange = useStore((state) => state.resetDateRange)
     const { createEvent } = useCreateEvent()
+    const { uploadCover } = useEventCoverPhotos()
     const { inviteFriends } = useInviteFriends()
 
     const [eventLocation, setEventLocation] = useState({})
@@ -60,6 +63,9 @@ export default function CreateEventPage() {
     const [submitting, setSubmitting] = useState(false)
     const [submitError, setSubmitError] = useState(null)
     const [guests, setGuests] = useState([])
+    // Held locally until the event exists -- uploadCover needs an event id to write to, which
+    // doesn't exist until createEvent's insert returns. Uploaded as the last step of onSubmit.
+    const [coverAsset, setCoverAsset] = useState(null)
 
     const [myLat, setMyLatitude] = useState(null)
     const [myLong, setMyLongitude] = useState(null)
@@ -70,6 +76,7 @@ export default function CreateEventPage() {
 
     const guestsSheetRef = useRef(null)
     const locationSheetRef = useRef(null)
+    const coverSheetRef = useRef(null)
 
 
     const startTime = useStore((state) => state.startTime)
@@ -106,6 +113,15 @@ export default function CreateEventPage() {
 
     const canSubmit = title.trim().length > 0 && locationSelected && !!globalDateRange?.startId
 
+    const onCoverPhotoSourceSelected = async (source) => {
+        const asset = await pickImage(source, {
+            mediaTypes: ['images'],
+            allowsEditing: true,
+            quality: 0.8,
+        });
+        if (asset) setCoverAsset(asset)
+    };
+
     const onSubmit = async () => {
         if (!canSubmit || submitting) return
         setSubmitting(true)
@@ -137,10 +153,15 @@ export default function CreateEventPage() {
             await inviteFriends(data.id, guests)
         }
 
+        if (coverAsset) {
+            const { error: coverError } = await uploadCover(data.id, coverAsset)
+            if (coverError) console.log('cover upload failed', coverError)
+        }
+
         resetGlobalLocation()
         resetGlobalDateRange()
         resetTimes()
-        // Cover/description photos are optional and skippable from here (the edit screen's
+        // Description photos are still optional and skippable from here (the edit screen's
         // "Done" button goes to the event detail page, where inviting guests happens next).
         router.replace(`/event/${data.id}/edit`)
     }
@@ -281,6 +302,22 @@ export default function CreateEventPage() {
                 <View style={{ paddingBottom: l.spacing.xs }}>
                     <PageHeader fontSize={bS.h3} label={'Plan An Adventure'} close={true} onClosePress={() => { router.navigate('../') }} />
                 </View>
+                <View style={[styles.entryFields, {alignItems:'center'}]}>
+                    <Text style={[bS.body2, { color: cl.basic.white }]}>{'Cover Photo'} </Text>
+                    {coverAsset && (
+                        <Image
+                            source={{ uri: coverAsset.uri }}
+                            style={{ width: l.screen.width - (2 * l.margins.page), height: l.screen.width * 0.5, borderRadius: l.spacing.xs }}
+                            resizeMode={'cover'}
+                        />
+                    )}
+                    <SquareButton
+                        label={coverAsset ? 'Change' : 'Choose Photo'}
+                        size={'small'}
+                        onPress={() => coverSheetRef.current?.expand()}
+                    />
+                </View>
+
                 <View style={[styles.entryFields, {alignContent:'center', justifyContent:'center',alignItems:'center'}]}>
                     <Text style={[bS.body2, { color: cl.basic.white }]}>{'Who can see this?'} </Text>
                     <View style={{ flexDirection: 'row', gap: l.spacing.xs }}>
@@ -386,6 +423,7 @@ export default function CreateEventPage() {
                 }}/>
                 
             <FriendsBottomSheet ref={guestsSheetRef} selectedIds={guests} onDone={setGuests} />
+            <PhotoSourceBottomSheet ref={coverSheetRef} onSelect={onCoverPhotoSourceSelected} />
         </View>
     )
 }

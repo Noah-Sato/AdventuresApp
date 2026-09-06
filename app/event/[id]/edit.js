@@ -15,8 +15,8 @@ import { useAuth } from '~/contexts/AuthProvider';
 import { useEvent, useEventCoverPhotos } from '@hooks/useEvents';
 
 // This screen is reused for both "right after creating an event" and later edits -- the host
-// can set cover/description photos at creation time or add them any time before the event
-// starts. Scoped narrowly to just these photo fields, not full event editing.
+// can set cover/description photos at creation time or any time after, including once the
+// event is underway or over. Scoped narrowly to just these photo fields, not full event editing.
 
 function PhotoSlot({ label, url, onPick, uploading }) {
     return (
@@ -61,9 +61,8 @@ export default function EditEventScreen() {
     if (!event) return <Redirect href="../" />
 
     const isHost = session?.user.id === event.host_id
-    const canEdit = isHost && new Date(event.start_date) > new Date()
 
-    if (!canEdit) return <Redirect href="../" />
+    if (!isHost) return <Redirect href="../" />
 
     const openPicker = (target) => {
         pendingTargetRef.current = target;

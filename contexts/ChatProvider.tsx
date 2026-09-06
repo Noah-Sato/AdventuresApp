@@ -9,7 +9,7 @@ import { tokenProvider } from "~/utils/tokenProvider";
 import { getAvatarPublicUrl } from "~/utils/avatarUrl";
 
 
-const client = StreamChat.getInstance(process.env.EXPO_PUBLIC_STREAM_API_KEY);
+const client = StreamChat.getInstance(process.env.EXPO_PUBLIC_STREAM_API_KEY, { timeout: 10000 });
 
 
 export default function ChatProvider({children}: PropsWithChildren) {

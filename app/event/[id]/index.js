@@ -69,7 +69,7 @@ function PageHeader(props) {
 
 }
 
-function formatEventDate(startDate, endDate) {
+export function formatEventDate(startDate, endDate) {
     const start = parseISO(startDate)
     const end = endDate ? parseISO(endDate) : null
     const dayLabel = isTomorrow(start) ? 'Tomorrow, ' : ''
@@ -235,7 +235,7 @@ export default function Page() {
                                 <SquareButton size={'medium'} label={'Photos'} fill={false} onPress={()=>router.push(`/event/${id}/photos`)}/>
                             </View>}
 
-                        {isHost && new Date(event.start_date) > new Date() &&
+                        {isHost &&
                             <View style={{alignContent:'center', alignSelf:'center', paddingTop:l.spacing.s}}>
                                 <SquareButton size={'medium'} label={'Edit'} fill={false} onPress={()=>router.push(`/event/${id}/edit`)}/>
                             </View>}

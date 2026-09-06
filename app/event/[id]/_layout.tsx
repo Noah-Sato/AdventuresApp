@@ -18,7 +18,7 @@ export default function EventLayout() {
       <Stack.Screen name="index" options={{ headerShown: false  }} />
       <Stack.Screen name="photos" options={{ headerShown: false  }} />
       <Stack.Screen name="edit" options={{ presentation: 'modal', headerShown: false  }} />
-
+      <Stack.Screen name="memory" options={{ headerShown: false }} />
     </Stack>
   );
 }

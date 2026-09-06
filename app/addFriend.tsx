@@ -70,10 +70,15 @@ export default function AddFriendScreen() {
                 gap: l.spacing.s,
               }}>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: l.spacing.s, flex: 1 }}>
-                <UserIcon userImage={item.avatar_url} size={'small'} />
-                <Text numberOfLines={1} style={[bS.body2, { color: cl.basic.white, flexShrink: 1 }]}>
-                  {item.full_name ?? item.username}
-                </Text>
+                <TouchableOpacity onPress={() => {
+                  const otherId = item.id
+                  if (otherId) router.push(`./app/user/${otherId}`);
+                }}>
+                  <UserIcon userImage={item.avatar_url} size={'small'} />
+                  <Text numberOfLines={1} style={[bS.body2, { color: cl.basic.white, flexShrink: 1 }]}>
+                    {item.full_name ?? item.username}
+                  </Text>
+                </TouchableOpacity>
               </View>
               {status === 'none' && (
                 <TouchableOpacity onPress={() => sendRequest(item.id)}>

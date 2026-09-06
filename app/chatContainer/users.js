@@ -1,21 +1,20 @@
 import { useEffect, useState } from "react";
-import { FlatList, View, TouchableOpacity } from "react-native";
+import { FlatList, View, TouchableOpacity, TextInput } from "react-native";
 import { Text } from '@src/components/Text';
 import { supabase } from '~/utils/supabase'
 import { useAuth } from '~/contexts/AuthProvider';
 import { router } from "expo-router";
 
-import { bS } from '@theme/Styles'
+import { bS, mainStyles } from '@theme/Styles'
 import cl from '@theme/Colours'
 import l from '@theme/Layout'
 
-import { mainStyles } from "@theme/Styles";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { ListItem } from "@components/listDisplays/UserListItem";
+import { useFriends } from '@hooks/useFriends'
 
 import Close from '@assets/ButtonIcons/close_24px_outlined.svg'
 import Back from '@assets/ButtonIcons/arrow_back_ios_24px_outlined.svg'
-
-import { ListItem }from "@components/listDisplays/UserListItem";
 
 
 
@@ -72,6 +71,12 @@ function PageHeader(props) {
 export default function UsersScreen() {
     const [users, setUsers] = useState([])
     const { user } = useAuth()
+    const [query, setQuery] = useState('');
+    const { friends } = useFriends();
+
+    const filtered = friends.filter(f => 
+        (f.profile.full_name ?? f.profile.username ?? '').toLowerCase().includes(query.toLowerCase())
+    )
 
 
     useEffect(()=>{
@@ -90,18 +95,31 @@ export default function UsersScreen() {
                 <PageHeader back={true} onBackPress={()=>{router.navigate('../')}} label={'users'} />
             </View>
 
+            <View style={{paddingHorizontal:l.margins.page, paddingVertical:l.spacing.m}}>
+                <TextInput
+                    value={query}
+                    onChangeText={setQuery}
+                    placeholder={'Search Friends'}
+                    placeholderTextColor={cl.grey.eighty}
+                    autoCapitalize={'none'}
+                    style={{
+                        borderWidth: l.spacing.xs3,
+                        borderColor: cl.basic.white,
+                        borderRadius: l.spacing.xs,
+                        paddingHorizontal: l.spacing.s,
+                        paddingVertical: l.spacing.s,
+                        color: cl.basic.white,
+                        fontFamily: 'tenor-sans'
+                    }}
+                />
+            </View>
 
             <FlatList
                 style={{paddingTop:l.spacing.m}}
                 //contentContainerStyle={{}}
-                data={users}
-                renderItem={({item}) => {
-                    console.log(item)
-                
-                    return(
-                        <ListItem user={item}/>
-                    )       
-            }}
+                data={filtered}
+                keyExtractor={item => item.profile.id}
+                renderItem={({item}) => <ListItem user={item.profile}/>}
             />
         </View>
     )

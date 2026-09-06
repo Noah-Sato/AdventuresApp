@@ -13,7 +13,7 @@ import { useEffect, useState } from 'react';
 import RightArrowButton from '@assets/ButtonIcons/chevron_right_24px_outlined.svg'
 import { supabase } from '~/utils/supabase'
 import { getAvatarPublicUrl } from '~/utils/avatarUrl'
-import { Link } from 'expo-router';
+import { Link, router } from 'expo-router';
 
 //Api call take users name/Id and request all/spesific info based on the 
 
@@ -205,9 +205,9 @@ function EventsDisplay(props) {
 
                     }}>
                         <View style={{gap:l.spacing.xs, flexDirection:'row'}}>
-                            <View>
+                            <TouchableOpacity onPress={() => userID && router.push(`/user/${userID}`)}>
                                 <EventsIcon size={'large'} eventImage={eventImage} userImage={userImage}/>
-                            </View>
+                            </TouchableOpacity>
 
                             <View style={{
                                 paddingVertical:l.buttonSpacing.large,
